@@ -162,6 +162,5 @@ cython_debug/
 #.idea/
 
 .vs
-build
 sfx_palettes
 z.ex
