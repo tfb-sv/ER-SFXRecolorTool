@@ -41,26 +41,24 @@ def initialize_paths(config_file):
     elden_ring_abs_path = config["elden_ring_abs_path"]
     mod_abs_path = config["mod_abs_path"]
     witchyBND_path = config["witchyBND_abs_path"]
-    UXM_path = config["UXM_abs_path"]
-    
+
     sfx_tmp_path = config["sfx_tmp_path"]
     graph_path = config["graph_path"]
     main_sfx_file_name = config["main_sfx_file_name"]
     main_sfx_folder_name = main_sfx_file_name.replace(".", "-") + "-wffxbnd"
-    
+
     main_path = f"{sfx_tmp_path}/orj_backup"
     save_path = f"{sfx_tmp_path}/all_success_altereds"
     active_path = f"{sfx_tmp_path}/active_files"
-    
+
     if not os.path.exists(main_path): os.mkdir(main_path)
     if not os.path.exists(save_path): os.mkdir(save_path)
     if not os.path.exists(active_path): os.mkdir(active_path)
-    
+
     paths = {
         "elden_ring_abs_path": elden_ring_abs_path,
         "mod_abs_path": mod_abs_path,
         "witchyBND_abs_path": witchyBND_path,
-        "UXM_abs_path": UXM_path,
         "sfx_tmp_path": sfx_tmp_path,
         "graph_path": graph_path,
         "main_sfx_folder_name": main_sfx_folder_name,
@@ -69,7 +67,7 @@ def initialize_paths(config_file):
         "save_path": save_path,
         "active_path": active_path
     }
-    
+
     return paths
 
 ######################################################################################
@@ -174,8 +172,7 @@ def plot_colors(plot_input, isDeactivateAlpha=False, cols=6):
     [chosen_rgb_groups, chosen_elm_groups, target_colors, fn, sp, isPrePro] = plot_input
     total_colors = len(chosen_rgb_groups)
     if total_colors == 0: rows, cols = 1, 1
-    else:
-        rows = total_colors // cols + (1 if total_colors % cols else 0)
+    else: rows = total_colors // cols + (1 if total_colors % cols else 0)
     fig, axs = plt.subplots(rows, 
                             cols, 
                             figsize=(cols*2, rows*3),
@@ -221,13 +218,13 @@ def plot_1color(rgb):   # For debugging
     plt.imshow([[rgb]])
     plt.axis('off')
     plt.show()
-    
+
 ######################################################################################
 
 def replace_first_2_lines(xml_path, first_2line):
     with open(xml_path, "r", encoding="utf8") as f: new_xml = f.readlines()[1:]
     with open(xml_path, "w", encoding="utf8") as f: f.write(''.join(first_2line) + ''.join(new_xml))
-    
+
 ######################################################################################
 
 def prepare_recolor_mission(recolor_mission):
@@ -238,16 +235,19 @@ def prepare_recolor_mission(recolor_mission):
 def check_if_original_files_in_path(paths):
     main_sfx_folder_name = paths['main_sfx_folder_name']
     if not os.path.exists(f"{paths['main_path']}/{main_sfx_folder_name}"):
-        print(f'\n>> Folder {main_sfx_folder_name} could not be found. It has started to be decompressed via WitchyBND.\n')
+        print(f'\n>> Original folder {main_sfx_folder_name} could NOT be found. It has started to be decompressed via WitchyBND.\n')
         shutil.copyfile(f"{paths['elden_ring_abs_path']}/{paths['main_sfx_file_name']}", 
                         f"{paths['main_path']}/{paths['main_sfx_file_name']}")
         decompress_main_sfx_file_command = [paths['witchyBND_abs_path'], 
                                             f"{paths['main_path']}/{paths['main_sfx_file_name']}",
                                             '-p']
         _ = subprocess.run(decompress_main_sfx_file_command)
+    else: print(f'\n>> Original folder {main_sfx_folder_name} could be found.')
     if not os.path.exists(f"{paths['save_path']}/{main_sfx_folder_name}"):
+        print(f'\n>> Updated folder {main_sfx_folder_name} could NOT be found. Original SFX were loaded.')
         shutil.copyfile(f"{paths['main_path']}/{main_sfx_folder_name}", 
                         f"{paths['save_path']}/{main_sfx_folder_name}")
+    else: print(f'\n>> Updated folder {main_sfx_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
 
 ######################################################################################
 
@@ -271,13 +271,13 @@ def process_sfx_files(sfx_ids, paths):
 
 ######################################################################################
 
-def decompress_fxr_files(decompress_command):
-    _ = subprocess.run(decompress_command)
+def decompress_fxr_files(decompress_fxr_command):
+    _ = subprocess.run(decompress_fxr_command)
     print('\n>> FXR files were decompressed to XML files via WitchyBND.\n')
 
 ######################################################################################
 
-def process_xml_files(active_path, recolor_mission, graph_path, isDeactivateAlpha, cols):
+def process_xml_files(recolor_mission, active_path, graph_path, isDeactivateAlpha, cols, is_inspection):
     cnt = 0
     for fn in os.listdir(active_path):
         xml_path = f"{active_path}/{fn}"
@@ -290,6 +290,7 @@ def process_xml_files(active_path, recolor_mission, graph_path, isDeactivateAlph
         tree = ET.parse(xml_path)
         core_input = [tree, recolor_mission.keys(), fn, graph_path, isDeactivateAlpha, cols, "pre"]
         core_output = core_process(core_input)
+        if is_inspection: continue
         [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, chosen_rgb_groups, chosen_elm_groups, all_rgb_groups, all_elm_groups] = core_output
         will_be_changed_rgbs_new = create_toning(will_be_changed_rgbs, will_be_changed_clrs, recolor_mission)
         for key, elms in will_be_changed_elms.items():
@@ -310,7 +311,11 @@ def compress_xml_files(compress_xml_command):
 
 ######################################################################################
 
-def move_and_compress_files(active_path, save_path, main_sfx_folder_name, witchyBND_path):
+def move_and_compress_files(paths):
+    active_path = paths["active_path"]
+    save_path = paths["save_path"]
+    main_sfx_folder_name = paths["main_sfx_folder_name"]
+    witchyBND_path = paths["witchyBND_abs_path"]
     for fn in os.listdir(active_path):
         from_path = f"{active_path}/{fn}"
         to_path = f"{save_path}/{fn}"
@@ -322,13 +327,14 @@ def move_and_compress_files(active_path, save_path, main_sfx_folder_name, witchy
 
 ######################################################################################
 
-def finalize_process(save_path, main_sfx_file_name, mod_abs_path, UXM_path):
+def finalize_process(paths):
+    save_path = paths["save_path"]
+    main_sfx_file_name = paths["main_sfx_file_name"]
+    mod_abs_path = paths["mod_abs_path"]
     fp = f"{save_path}/{main_sfx_file_name}"
     mod_fp = f"{mod_abs_path}/{main_sfx_file_name}"
     shutil.copyfile(fp, mod_fp)
     print("\n>> Process was COMPLETED !\n")
-    # print("\n>> Process was COMPLETED ! Please remember to patch the game via UXM !\n")
-    # subprocess.run([UXM_path])
 
 ######################################################################################
     
