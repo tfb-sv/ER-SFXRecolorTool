@@ -1,8 +1,9 @@
 {
-    "elden_ring_abs_path": "Y:/SteamLibrary/steamapps/common/ELDEN RING/Game/sfx",
-    "mod_abs_path": "C:/Users/nural/ERTools/.standalones/ModEngine2/myERmod/sfx",
-    "witchyBND_abs_path": "C:/Users/nural/ERTools/.standalones/WitchyBND/WitchyBND.exe",
-    "sfx_tmp_path": "sfx",
-    "graph_path": "sfx_palettes",
-    "main_sfx_file_name": "sfxbnd_commoneffects.ffxbnd.dcx"
+  "elden_ring_abs_path": "Y:/SteamLibrary/steamapps/common/ELDEN RING/Game/sfx",
+  "mod_abs_path": "C:/Users/nural/ERTools/.standalones/ModEngine2/myERmod/sfx",
+  "witchyBND_abs_path": "C:/Users/nural/ERTools/.standalones/WitchyBND/WitchyBND.exe",
+  "sfx_tmp_path": "sfx",
+  "graph_path": "sfx_palettes",
+  "main_sfx_file_name": "sfxbnd_commoneffects.ffxbnd.dcx",
+  "main_sfx_dlc_file_name": "sfxbnd_commoneffects_dlc02.ffxbnd.dcx"
 }

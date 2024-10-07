@@ -17,7 +17,7 @@ def rgb_to_color_name(rgb):
     hue_angle = h * 360
     if l > 0.9: return 'white', hue_angle, l, s
     elif l < 0.09: return 'black', hue_angle, l, s
-    elif s < 0.09: return 'grey', hue_angle, l, s
+    elif s < 0.09: return 'gray', hue_angle, l, s
     elif hue_angle < 9: return 'red', hue_angle, l, s
     elif hue_angle < 45: return 'orange', hue_angle, l, s
     elif hue_angle < 64: return 'yellow', hue_angle, l, s
@@ -29,9 +29,11 @@ def rgb_to_color_name(rgb):
 
 ######################################################################################
 
-def validate_colors(recolor_mission):
-    all_colors = ["white", "black", "grey", "red", "orange", "yellow", "green", "blue", "purple", "pink"]
+def validate_colors(recolor_mission=None):
+    all_colors = ["white", "black", "gray", "red", "orange", "yellow", "green", "blue", "purple", "pink"]
+    if not recolor_mission: return all_colors
     assert all(color in all_colors for color in recolor_mission.keys())
+    return all_colors
 
 ######################################################################################
 
@@ -46,6 +48,8 @@ def initialize_paths(config_file):
     graph_path = config["graph_path"]
     main_sfx_file_name = config["main_sfx_file_name"]
     main_sfx_folder_name = main_sfx_file_name.replace(".", "-") + "-wffxbnd"
+    main_sfx_dlc_file_name = config["main_sfx_dlc_file_name"]
+    main_sfx_dlc_folder_name = main_sfx_dlc_file_name.replace(".", "-") + "-wffxbnd"
 
     main_path = f"{sfx_tmp_path}/orj_backup"
     save_path = f"{sfx_tmp_path}/all_success_altereds"
@@ -53,7 +57,8 @@ def initialize_paths(config_file):
 
     if not os.path.exists(main_path): os.mkdir(main_path)
     if not os.path.exists(save_path): os.mkdir(save_path)
-    if not os.path.exists(active_path): os.mkdir(active_path)
+    if os.path.exists(active_path): shutil.rmtree(active_path) 
+    os.mkdir(active_path)
 
     paths = {
         "elden_ring_abs_path": elden_ring_abs_path,
@@ -63,6 +68,8 @@ def initialize_paths(config_file):
         "graph_path": graph_path,
         "main_sfx_folder_name": main_sfx_folder_name,
         "main_sfx_file_name": main_sfx_file_name,
+        "main_sfx_dlc_folder_name": main_sfx_dlc_folder_name,
+        "main_sfx_dlc_file_name": main_sfx_dlc_file_name,
         "main_path": main_path,
         "save_path": save_path,
         "active_path": active_path
@@ -248,6 +255,22 @@ def check_if_original_files_in_path(paths):
         shutil.copyfile(f"{paths['main_path']}/{main_sfx_folder_name}", 
                         f"{paths['save_path']}/{main_sfx_folder_name}")
     else: print(f'\n>> Updated folder {main_sfx_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
+    main_sfx_dlc_folder_name = paths['main_sfx_dlc_folder_name']
+    if not os.path.exists(f"{paths['main_path']}/{main_sfx_dlc_folder_name}"):
+        print(f'\n>> Original folder {main_sfx_dlc_folder_name} could NOT be found. It has started to be decompressed via WitchyBND.\n')
+        shutil.copyfile(f"{paths['elden_ring_abs_path']}/{paths['main_sfx_dlc_file_name']}", 
+                        f"{paths['main_path']}/{paths['main_sfx_dlc_file_name']}")
+        decompress_main_sfx_file_command = [paths['witchyBND_abs_path'], 
+                                            f"{paths['main_path']}/{paths['main_sfx_dlc_file_name']}",
+                                            '-p']
+        _ = subprocess.run(decompress_main_sfx_file_command)
+    else: print(f'\n>> Original folder {main_sfx_dlc_folder_name} could be found.')
+    if not os.path.exists(f"{paths['save_path']}/{main_sfx_dlc_folder_name}"):
+        print(f'\n>> Updated folder {main_sfx_dlc_folder_name} could NOT be found. Original SFX were loaded.')
+        shutil.copyfile(f"{paths['main_path']}/{main_sfx_dlc_folder_name}", 
+                        f"{paths['save_path']}/{main_sfx_dlc_folder_name}")
+    else: print(f'\n>> Updated folder {main_sfx_dlc_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
+
 
 ######################################################################################
 
@@ -334,6 +357,7 @@ def finalize_process(paths):
     fp = f"{save_path}/{main_sfx_file_name}"
     mod_fp = f"{mod_abs_path}/{main_sfx_file_name}"
     shutil.copyfile(fp, mod_fp)
+    # save mission file !   # here
     print("\n>> Process was COMPLETED !\n")
 
 ######################################################################################

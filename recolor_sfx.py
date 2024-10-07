@@ -17,7 +17,7 @@ def main(is_inspection):
     isDeactivateAlpha = False
     
     recolor_mission = prepare_recolor_mission(mission_input["target_colors"])
-    validate_colors(recolor_mission)
+    _ = validate_colors(recolor_mission)
     paths = initialize_paths(config_fp)
     
     check_if_original_files_in_path(paths)
