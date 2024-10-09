@@ -97,11 +97,11 @@ def create_toggle_button_frame(main_frame, row, column):
 #####################################################
 
 def create_toggle_buttons(toggle_button_frame):
-    toggle_inspect = ctk.CTkRadioButton(toggle_button_frame, text="INSPECT", variable=toggle_var, value=0, font=font_ms,
+    toggle_inspect = ctk.CTkRadioButton(toggle_button_frame, text="INSPECTION", variable=toggle_var, value=0, font=font_ms,
                                         text_color=text_color2, command=toggle_update, fg_color=theme_color2)
     toggle_inspect.grid(row=0, column=0, padx=padx_size)
 
-    toggle_recolor = ctk.CTkRadioButton(toggle_button_frame, text="RECOLOR", variable=toggle_var, value=1, font=font_ms,
+    toggle_recolor = ctk.CTkRadioButton(toggle_button_frame, text="RECOLORING", variable=toggle_var, value=1, font=font_ms,
                                         text_color=text_color2, command=toggle_update, fg_color=theme_color2)
     toggle_recolor.grid(row=0, column=1, padx=padx_size)
 
@@ -223,7 +223,7 @@ def setup_ui():
     root.resizable(False, False)
 
     ctk.set_appearance_mode("Dark")
-    ctk.set_default_color_theme("blue")
+    # ctk.set_default_color_theme("blue")
     
     font_name = "Helvetica"
     font_ms = ctk.CTkFont(family=font_name, size=14)
@@ -266,7 +266,7 @@ def check_admin():
 #####################################################################################
 
 def main():
-    check_admin()
+    # check_admin()
     try: setup_ui()
     except Exception as e:
         print(f"An error occurred while program is running: {e}")

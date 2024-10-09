@@ -10,5 +10,6 @@ cd %MAIN_DIR%
 
 REM %PYTHON_EXE% recolor_sfx.py
 pyinstaller -y -i recolor_icon.ico ER-SFXRecolorTool.py
+REM pyinstaller -y ER-SFXRecolorTool.spec
 
 pause
