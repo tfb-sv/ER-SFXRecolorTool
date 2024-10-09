@@ -1,4 +1,0 @@
-placi nuke debug
-
-gui
-gui - renk seçimi için
