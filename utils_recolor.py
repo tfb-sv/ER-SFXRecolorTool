@@ -257,7 +257,7 @@ def check_if_original_files_in_path(paths):
     else: print(f'\n>> Original folder {main_sfx_folder_name} could be found.')
     if not os.path.exists(f"{paths['save_path']}/{main_sfx_folder_name}"):
         print(f'\n>> Updated folder {main_sfx_folder_name} could NOT be found. Original SFX were loaded.')
-        shutil.copyfile(f"{paths['main_path']}/{main_sfx_folder_name}", 
+        shutil.copytree(f"{paths['main_path']}/{main_sfx_folder_name}", 
                         f"{paths['save_path']}/{main_sfx_folder_name}")
     else: print(f'\n>> Updated folder {main_sfx_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
     main_sfx_dlc_folder_name = paths['main_sfx_dlc_folder_name']
@@ -272,7 +272,7 @@ def check_if_original_files_in_path(paths):
     else: print(f'\n>> Original folder {main_sfx_dlc_folder_name} could be found.')
     if not os.path.exists(f"{paths['save_path']}/{main_sfx_dlc_folder_name}"):
         print(f'\n>> Updated folder {main_sfx_dlc_folder_name} could NOT be found. Original SFX were loaded.')
-        shutil.copyfile(f"{paths['main_path']}/{main_sfx_dlc_folder_name}", 
+        shutil.copytree(f"{paths['main_path']}/{main_sfx_dlc_folder_name}", 
                         f"{paths['save_path']}/{main_sfx_dlc_folder_name}")
     else: print(f'\n>> Updated folder {main_sfx_dlc_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
 
