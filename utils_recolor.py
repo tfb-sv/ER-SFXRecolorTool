@@ -190,6 +190,7 @@ def find_rgb_groups(all_rgb_groups, all_elm_groups):
 
 def plot_colors(plot_input, isDeactivateAlpha=False, cols=6):
     [chosen_rgb_groups, chosen_elm_groups, target_colors, fn, sp, isPrePro] = plot_input
+    isBeforeAfter = "Before" if isPrePro == "pre" else "After"
     total_colors = len(chosen_rgb_groups)
     if total_colors == 0: rows, cols = 1, 1
     else: rows = total_colors // cols + (1 if total_colors % cols else 0)
@@ -226,9 +227,8 @@ def plot_colors(plot_input, isDeactivateAlpha=False, cols=6):
     if total_colors < rows * cols:
         for i in range(total_colors, rows * cols):
             axs[i].axis('off')
-    fig.suptitle(f"\n{fn} > All Colors ({isPrePro.capitalize()})\n", fontsize=35)
+    fig.suptitle(f"\n{fn} > All Colors ({isBeforeAfter})\n", fontsize=35)
     plt.savefig(f"{sp}/{fn.split('.')[0]}_{isPrePro}.png", dpi=300, bbox_inches='tight')
-    # plt.show()
     return will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs
     
 ######################################################################################
@@ -245,6 +245,9 @@ def prepare_recolor_mission(recolor_mission):
 ######################################################################################
 
 def check_if_original_files_in_path(paths):
+    project_dir = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
+    
+    print("\n")
     main_sfx_folder_name = paths['main_sfx_folder_name']
     if not os.path.exists(f"{paths['main_path']}/{main_sfx_folder_name}"):
         print(f'\n>> Original folder {main_sfx_folder_name} could NOT be found. It has started to be decompressed via WitchyBND.\n')
@@ -252,14 +255,16 @@ def check_if_original_files_in_path(paths):
                         f"{paths['main_path']}/{paths['main_sfx_file_name']}")
         decompress_main_sfx_file_command = [paths['witchyBND_abs_path'], 
                                             f"{paths['main_path']}/{paths['main_sfx_file_name']}",
-                                            '-p']
+                                            '-s']
         _ = subprocess.run(decompress_main_sfx_file_command)
     else: print(f'\n>> Original folder {main_sfx_folder_name} could be found.')
+    
     if not os.path.exists(f"{paths['save_path']}/{main_sfx_folder_name}"):
         print(f'\n>> Updated folder {main_sfx_folder_name} could NOT be found. Original SFX were loaded.')
         shutil.copytree(f"{paths['main_path']}/{main_sfx_folder_name}", 
                         f"{paths['save_path']}/{main_sfx_folder_name}")
     else: print(f'\n>> Updated folder {main_sfx_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
+    
     main_sfx_dlc_folder_name = paths['main_sfx_dlc_folder_name']
     if not os.path.exists(f"{paths['main_path']}/{main_sfx_dlc_folder_name}"):
         print(f'\n>> Original folder {main_sfx_dlc_folder_name} could NOT be found. It has started to be decompressed via WitchyBND.\n')
@@ -267,15 +272,16 @@ def check_if_original_files_in_path(paths):
                         f"{paths['main_path']}/{paths['main_sfx_dlc_file_name']}")
         decompress_main_sfx_file_command = [paths['witchyBND_abs_path'], 
                                             f"{paths['main_path']}/{paths['main_sfx_dlc_file_name']}",
-                                            '-p']
+                                            '-s']
         _ = subprocess.run(decompress_main_sfx_file_command)
     else: print(f'\n>> Original folder {main_sfx_dlc_folder_name} could be found.')
+    
     if not os.path.exists(f"{paths['save_path']}/{main_sfx_dlc_folder_name}"):
         print(f'\n>> Updated folder {main_sfx_dlc_folder_name} could NOT be found. Original SFX were loaded.')
         shutil.copytree(f"{paths['main_path']}/{main_sfx_dlc_folder_name}", 
                         f"{paths['save_path']}/{main_sfx_dlc_folder_name}")
     else: print(f'\n>> Updated folder {main_sfx_dlc_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
-
+    print("\n\n")
 
 ######################################################################################
 
@@ -303,7 +309,7 @@ def process_sfx_files(sfx_ids, paths):
         shutil.copyfile(sfx_final_path, main_fp)
         shutil.copyfile(sfx_final_path, active_fp)
         decompress_fxr_command.append(active_fp)
-    decompress_fxr_command.append("-p")
+    decompress_fxr_command.append("-s")
     compress_xml_command = [f"{fxr_file}.xml" for fxr_file in decompress_fxr_command[1:-1]]
     compress_xml_command = [decompress_fxr_command[0]] + compress_xml_command + [decompress_fxr_command[-1]]
     return decompress_fxr_command, compress_xml_command, sfx2fn_dct, change_info
@@ -336,7 +342,7 @@ def process_xml_files(recolor_mission, active_path, graph_path, isDeactivateAlph
             new_rgb_values = will_be_changed_rgbs_new[key]
             for i in range(3): 
                 elms[i].set('Value', str(new_rgb_values[i])) 
-            tree.write(xml_path)   # , encoding="utf-8", xml_declaration=True
+            tree.write(xml_path)
             replace_first_2_lines(xml_path, first_2line)
         core_input = [tree, recolor_mission.keys(), fn, graph_path, isDeactivateAlpha, cols, "pro"]
         _ = core_process(core_input)
@@ -359,15 +365,14 @@ def move_and_compress_files(paths, sfx2fn_dct, change_info):
     for fn in os.listdir(active_path):
         from_path = f"{active_path}/{fn}"
         if fn.endswith(".fxr"): 
-            related_sfx_folder_name = sfx2fn_dct[fn]
-            final_dest = f"{save_path}/{related_sfx_folder_name}/effect/{fn}"
+            final_dest = sfx2fn_dct[fn]
             shutil.move(from_path, final_dest) 
         else: os.remove(from_path)
     if change_info[0]:
-        _ = subprocess.run([witchyBND_path, f"{save_path}/{main_sfx_folder_name}", "-p"])
+        _ = subprocess.run([witchyBND_path, f"{save_path}/{main_sfx_folder_name}", "-s"])
         print(f'\n>> Folder {main_sfx_folder_name} was compressed via WitchyBND.')
     if change_info[1]:
-        _ = subprocess.run([witchyBND_path, f"{save_path}/{main_sfx_dlc_folder_name}", "-p"])
+        _ = subprocess.run([witchyBND_path, f"{save_path}/{main_sfx_dlc_folder_name}", "-s"])
         print(f'\n>> Folder {main_sfx_dlc_folder_name} was compressed via WitchyBND.')
 
 ######################################################################################
@@ -397,8 +402,8 @@ def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_i
     
     with open(log_sn, 'w', encoding='utf8') as f:
         json.dump(mission_input, f, ensure_ascii=False, indent=4)
-    with open(mission_fn, 'w', encoding='utf8') as f:
-        json.dump(mission_input, f, ensure_ascii=False, indent=4)
+    # with open(mission_fn, 'w', encoding='utf8') as f:
+    #     json.dump(mission_input, f, ensure_ascii=False, indent=4)
     print("\n>> Recoloring was COMPLETED !\n")
 
 ######################################################################################

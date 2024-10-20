@@ -2,7 +2,6 @@
 import re
 import sys
 import json
-import ctypes
 import threading
 import customtkinter as ctk
 from utils_recolor import *
@@ -41,18 +40,13 @@ def on_closing():
     
 def update_color_box(entry, color_box, color_box_label):
     color_value = entry.get()
-    try:
-        color_value += ", 1.0"
-        is_rgba, hex_color = convert_rgba2hex(color_value)
-        if is_rgba:
-            color_box.configure(fg_color=hex_color)
-            color_box_label.configure(text="", bg_color=hex_color)
-        else: 
-            color_box.configure(fg_color=default_color)
-            color_box_label.configure(text="Not Valid", bg_color=default_color)
-    except ValueError: 
+    is_rgba, hex_color, _ = convert_rgba2hex(color_value)
+    if is_rgba:
+        color_box.configure(fg_color=hex_color)
+        color_box_label.configure(text="", bg_color=hex_color)
+    else: 
         color_box.configure(fg_color=default_color)
-        if color_value == "": color_box_label.configure(text="")
+        if color_value == "": color_box_label.configure(text="", bg_color=default_color)
         else: color_box_label.configure(text="Not Valid", bg_color=default_color)
         
 #####################################################
@@ -72,12 +66,15 @@ def toggle_update():
 #####################################################        
 
 def convert_rgba2hex(color_value):
-    values = [float(x) if i == 3 else int(x) for i, x in enumerate(re.split(r'[,\s]+', color_value.strip()))]
-    if len(values) == 4 and all(0 <= x <= 255 for x in values[:3]) and 0 <= values[3] <= 1:
-        alpha = values[3]
-        hex_color = '#{:02x}{:02x}{:02x}'.format(*map(int, values[:3]))
-        return True, hex_color, values
-    else: return False, None, None
+    try:
+        color_value += ", 1.0"
+        values = [float(x) if i == 3 else int(x) for i, x in enumerate(re.split(r'[,\s]+', color_value.strip()))]
+        if len(values) == 4 and all(0 <= x <= 255 for x in values[:3]) and 0 <= values[3] <= 1:
+            alpha = values[3]
+            hex_color = '#{:02x}{:02x}{:02x}'.format(*map(int, values[:3]))
+            return True, hex_color, values
+        else: return False, None, None
+    except ValueError: return False, None, None
 
 #####################################################
 
@@ -170,10 +167,9 @@ def init_color_update(color, entry, color_box, color_box_label):
     if mission_input.get("target_colors"):
         if mission_input.get("target_colors").get(color): 
             target_rgba_in = mission_input["target_colors"][color]
-            target_rgba = ', '.join(map(str, target_rgba_in))
-            is_rgba, hex_color, _ = convert_rgba2hex(target_rgba)
+            rgb_text = ', '.join(map(str, target_rgba_in[:3]))
+            is_rgba, hex_color, _ = convert_rgba2hex(rgb_text)
             if is_rgba: 
-                rgb_text = ', '.join(map(str, target_rgba_in[:3]))
                 entry.insert(0, rgb_text)
                 color_box.configure(fg_color=hex_color)
                 color_box_label.configure(text="", bg_color=hex_color) 
@@ -251,12 +247,5 @@ def setup_ui():
 
     root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
-
-#####################################################################################
-
-def check_admin():
-    if not ctypes.windll.shell32.IsUserAnAdmin():
-        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-        sys.exit()
 
 #####################################################################################

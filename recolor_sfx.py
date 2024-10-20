@@ -8,6 +8,8 @@ def main(recolor_info):
     graph_clm_cnt = 6
     isDeactivateAlpha = False
 
+    print(f"\nRecolor Mission: {recolor_mission}\n")
+
     if recolor_mission: 
         recolor_mission = prepare_recolor_mission(recolor_mission)
         validate_colors(recolor_mission)
@@ -27,6 +29,6 @@ def main(recolor_info):
 
     compress_xml_files(compress_xml_command)
     move_and_compress_files(paths, sfx2fn_dct, change_info)
-    finalize_process(paths, mission_input, mission_fn, recolor_mission, sfx2fn_dct, change_info)
+    finalize_process(paths, mission_input, mission_fn, recolor_mission, change_info)
 
 ###################################################################################### 

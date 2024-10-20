@@ -9,7 +9,7 @@ CALL %CONDA_DIR%\Scripts\activate.bat %ENV_NAME%
 cd %MAIN_DIR%
 
 REM %PYTHON_EXE% recolor_sfx.py
-pyinstaller -y -i recolor_icon.ico ER-SFXRecolorTool.py
+pyinstaller -y -i recolor_sfx_icon.ico ER-SFXRecolorTool.py
 REM pyinstaller -y ER-SFXRecolorTool.spec
 
 pause
