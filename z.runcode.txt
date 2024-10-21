@@ -1,8 +1,0 @@
-
-conda activate torch-lnn
-
-cd C:\Users\nural\ER-SFXRecolorTool
-
-cls
-
-python recolor_sfx.py

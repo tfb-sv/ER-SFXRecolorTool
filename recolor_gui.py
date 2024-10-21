@@ -13,17 +13,17 @@ is_debug = False
 
 config_fn = "paths_config.json"
 mission_fn = "recolor_mission.json"
-assert_config = f"\n>> The file {config_fn} could not be found in the program directory. The program is ABORTED.\n"
-assert_mission = f"\n>> The file {mission_fn} could not be found in the program directory. The program is ABORTED.\n"
-assert os.path.exists(config_fn), assert_config
-assert os.path.exists(mission_fn), assert_mission
+assert_config_text = f"\n>> The file {config_fn} could not be found in the program directory. The program is ABORTED.\n"
+assert_mission_text = f"\n>> The file {mission_fn} could not be found in the program directory. The program is ABORTED.\n"
+assert os.path.exists(config_fn), assert_config_text
+assert os.path.exists(mission_fn), assert_mission_text
 with open(mission_fn, "r", encoding="utf8") as f: mission_input = json.load(f)
 sfx_ids = mission_input["sfx_ids"]
 
-version_str = "3.2"
+version_str = "1.0.0"
 year_str = "2024"
 owner_str = "ineedthetail"
-copyright_text = f"\u00A9 {year_str} {owner_str}. All rights reserved.\nv{version_str}"
+copyright_text = f"\u00A9 {year_str} {owner_str}. Licensed under CC BY-NC-SA 4.0.\nv{version_str}"
 
 all_colors = get_all_colors()
 all_colors_texts = ["black", "white", "white", "white", "black", 
