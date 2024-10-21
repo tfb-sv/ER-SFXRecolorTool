@@ -225,7 +225,11 @@ def create_recolor_button(main_frame, row, column):
 #####################################################################################
 
 def create_copyright_label(main_frame, row, column):
-    text_copyright = ctk.CTkLabel(main_frame, text=copyright_text, font=font_ms, text_color=text_color1)
+    text_copyright = ctk.CTkButton(main_frame, text=copyright_text, 
+                                   command=open_url,
+                                   hover=False,
+                                   fg_color=default_color, text_color=text_color1, 
+                                   width=100, height=30, font=font_ms)
     text_copyright.grid(row=row, column=column, padx=(padx_size + pad_l, padx_size + pad_r), 
                         pady=(pady_size + pad_top, pady_size + pad_bot))
 
@@ -282,7 +286,7 @@ def setup_ui():
     global font_ms, font_size, font_bold
     
     root = ctk.CTk()
-    root.title(f"ER-SFXRecolorTool v{version_str}")
+    root.title(f"ER-SFXRecolorTool")   #  v{version_str}
     root.resizable(False, False)
 
     ctk.set_appearance_mode("Dark")

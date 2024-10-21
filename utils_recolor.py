@@ -4,6 +4,7 @@ import json
 import shutil
 import random
 import colorsys
+import webbrowser
 import subprocess
 import numpy as np
 from datetime import datetime
@@ -59,6 +60,10 @@ def prepare_recolor_mission(recolor_mission):
     assert all(color in all_colors for color in recolor_mission.keys())
     recolor_mission = {color: [value / 255 for value in rgb] for color, rgb in recolor_mission.items()}
     return recolor_mission
+
+######################################################################################
+
+def open_url(): webbrowser.open("https://github.com/tfb-sv/ER-SFXRecolorTool.git")
 
 ######################################################################################
 
