@@ -53,15 +53,17 @@ def witchy_subprocess(command):
     _ = subprocess.run(command)
 
 ######################################################################################
-    
-def validate_colors(recolor_mission):
+
+def prepare_recolor_mission(recolor_mission):
     all_colors = get_all_colors()
     assert all(color in all_colors for color in recolor_mission.keys())
+    recolor_mission = {color: [value / 255 for value in rgb] for color, rgb in recolor_mission.items()}
+    return recolor_mission
 
 ######################################################################################
 
-def initialize_paths(config_file):
-    with open(config_file, "r", encoding="utf8") as f: config = json.load(f)
+def initialize_paths(config_fn):
+    with open(config_fn, "r", encoding="utf8") as f: config = json.load(f)
 
     elden_ring_abs_path = config["elden_ring_abs_path"]
     mod_abs_path = config["mod_abs_path"]
@@ -110,11 +112,11 @@ def initialize_paths(config_file):
 ######################################################################################
 
 def core_process(core_input):
-    [tree, target_colors, fn, graph_path, cols, isPrePro, is_debug] = core_input   # , isDeactivateAlpha
+    [tree, target_colors, fn, graph_path, cols, isPrePro, is_debug] = core_input
     all_rgb_groups, all_elm_groups = find_all_groups(tree)
     chosen_rgb_groups, chosen_elm_groups = find_rgb_groups(all_rgb_groups, all_elm_groups, fn, is_debug)
     plot_input = [chosen_rgb_groups, chosen_elm_groups, target_colors, fn, graph_path, isPrePro]
-    will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs = plot_colors(plot_input, cols)   # , isDeactivateAlpha
+    will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs = plot_colors(plot_input, cols)
     core_output = [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, chosen_rgb_groups, chosen_elm_groups, all_rgb_groups, all_elm_groups]
     return core_output
 
@@ -222,7 +224,7 @@ def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, is_debug):
 
 ######################################################################################
 
-def plot_colors(plot_input, cols):   # , isDeactivateAlpha=False
+def plot_colors(plot_input, cols):
     [chosen_rgb_groups, chosen_elm_groups, target_colors, fn, sp, isPrePro] = plot_input
     isBeforeAfter = "Before" if isPrePro == "pre" else "After"
     total_colors = len(chosen_rgb_groups)
@@ -245,7 +247,6 @@ def plot_colors(plot_input, cols):   # , isDeactivateAlpha=False
             will_be_changed_elms[k] = chosen_elm_groups[k]  
             will_be_changed_clrs[k] = color_text
         ax = axs[i]
-        # if isDeactivateAlpha: rgb[3] = 1.0
         ax.add_patch(plt.Rectangle((0, 0), 1, 1, color=rgb))
         ax.axis('off')
         ax.text(0.5, 0.5, color_text, fontsize=12, 
@@ -270,11 +271,6 @@ def plot_colors(plot_input, cols):   # , isDeactivateAlpha=False
 def replace_first_2_lines(xml_path, first_2line):
     with open(xml_path, "r", encoding="utf8") as f: new_xml = f.readlines()[1:]
     with open(xml_path, "w", encoding="utf8") as f: f.write(''.join(first_2line) + ''.join(new_xml))
-
-######################################################################################
-
-def prepare_recolor_mission(recolor_mission):
-    return {color: [value / 255 for value in rgb] for color, rgb in recolor_mission.items()}
 
 ######################################################################################
 
@@ -347,7 +343,7 @@ def process_sfx_files(sfx_ids, paths):
 
 ######################################################################################
 
-def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspection, is_debug):   # , isDeactivateAlpha
+def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspection, is_debug):
     cnt = 0
     for fn in os.listdir(active_path):
         xml_path = f"{active_path}/{fn}"
@@ -358,7 +354,7 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspect
         with open(xml_path, "r", encoding="utf8") as f: first_2line = f.readlines()[:2]
         print(f">> {cnt} - {fn} has started to be processed..")
         tree = ET.parse(xml_path)
-        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pre", is_debug]   # , isDeactivateAlpha
+        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pre", is_debug]
         core_output = core_process(core_input)
         if is_inspection: continue
         [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, chosen_rgb_groups, chosen_elm_groups, all_rgb_groups, all_elm_groups] = core_output
@@ -369,7 +365,7 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspect
                 elms[i].set('Value', str(new_rgb_values[i])) 
             tree.write(xml_path)
             replace_first_2_lines(xml_path, first_2line)
-        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pro", is_debug]   # , isDeactivateAlpha
+        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pro", is_debug]
         _ = core_process(core_input)
     print("\n")
 
@@ -421,8 +417,8 @@ def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_i
     
     with open(log_sn, 'w', encoding='utf8') as f:
         json.dump(mission_input, f, ensure_ascii=False, indent=4)
-    # with open(mission_fn, 'w', encoding='utf8') as f:
-    #     json.dump(mission_input, f, ensure_ascii=False, indent=4)
+    with open(mission_fn, 'w', encoding='utf8') as f:
+        json.dump(mission_input, f, ensure_ascii=False, indent=4)
     print("\n>> Recoloring was COMPLETED !\n")
 
 ######################################################################################

@@ -11,10 +11,12 @@ import recolor_sfx
 
 is_debug = False
 
-config_fp = "paths_config.json"
+config_fn = "paths_config.json"
 mission_fn = "recolor_mission.json"
-assert_text = f"\n>> The file {mission_fn} could not be found in the program directory. The program is ABORTED.\n"
-assert os.path.exists(mission_fn), assert_text
+assert_config = f"\n>> The file {config_fn} could not be found in the program directory. The program is ABORTED.\n"
+assert_mission = f"\n>> The file {mission_fn} could not be found in the program directory. The program is ABORTED.\n"
+assert os.path.exists(config_fn), assert_config
+assert os.path.exists(mission_fn), assert_mission
 with open(mission_fn, "r", encoding="utf8") as f: mission_input = json.load(f)
 sfx_ids = mission_input["sfx_ids"]
 
@@ -231,11 +233,13 @@ def create_copyright_label(main_frame, row, column):
     
 def start_recoloring_procedure():  
     global entry_widgets, info_label, recolor_button, progress_bar, checkbox
-    
+
     is_inspection = not toggle_var.get()
     is_run_after = checkbox_var.get()
     mod_name = get_toggle_text()
     
+    final_text = f"{mod_name.capitalize()} was completed successfully."
+
     progress_bar.set(0)
     progress_bar.grid()
     info_label.configure(text=f"{mod_name.capitalize()} procedure was started, please wait..")
@@ -250,13 +254,13 @@ def start_recoloring_procedure():
             is_color, _, rgba_list = convert_rgba2hex(color_value)
             if is_color: recolor_mission[color] = rgba_list 
     recolor_info = [is_inspection, recolor_mission, 
-                    config_fp, mission_fn, mission_input, sfx_ids, is_debug]
+                    config_fn, mission_fn, mission_input, sfx_ids, is_debug]
     mod_engine_abs_path = recolor_sfx.main(recolor_info, progress_bar)
     progress_bar.set(1)
-    info_label.configure(text=f"{mod_name.capitalize()} was completed successfully.")
+    info_label.configure(text=final_text)
     
     showinfo(f"{mod_name.upper()} COMPLETED", 
-             f"{mod_name.capitalize()} was completed successfully.")
+             final_text)
 
     progress_bar.set(0)
     progress_bar.grid_remove()
