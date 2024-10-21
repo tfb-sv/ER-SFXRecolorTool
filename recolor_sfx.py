@@ -1,14 +1,14 @@
 ######################################################################################
 import subprocess
+from pathlib import Path
 from utils_recolor import *
 ######################################################################################
 
-def main(recolor_info):
-    [is_inspection, recolor_mission, config_fp, mission_fn, mission_input, sfx_ids] = recolor_info
+def main(recolor_info, progress_bar):
+    [is_inspection, recolor_mission, config_fp, mission_fn, mission_input, sfx_ids, is_debug] = recolor_info
     graph_clm_cnt = 6
-    isDeactivateAlpha = False
-
-    print(f"\nRecolor Mission: {recolor_mission}\n")
+    # isDeactivateAlpha = False
+    norm_coef = 0.01 if not is_inspection else 0.015
 
     if recolor_mission: 
         recolor_mission = prepare_recolor_mission(recolor_mission)
@@ -16,19 +16,35 @@ def main(recolor_info):
     
     paths = initialize_paths(config_fp)
     check_if_original_files_in_path(paths)
+    progress_bar.set(15*norm_coef)
     
     decompress_fxr_command, compress_xml_command, sfx2fn_dct, change_info = process_sfx_files(sfx_ids, paths)
-    decompress_fxr_files(decompress_fxr_command)
+    progress_bar.set(30*norm_coef)
+    
+    witchy_subprocess(decompress_fxr_command)
+    print('\n>> FXR files were decompressed to XML files via WitchyBND.\n')
+    progress_bar.set(45*norm_coef)
+    
     process_xml_files(recolor_mission, paths["active_path"], paths["graph_path"], 
-                      isDeactivateAlpha, graph_clm_cnt, is_inspection)
-
+                      graph_clm_cnt, is_inspection, is_debug)   # isDeactivateAlpha,
+    progress_bar.set(60*norm_coef)
+    
     if is_inspection:
         print("\n>> Inspection was COMPLETED !\n")
         subprocess.Popen(f'explorer "{paths["graph_path"]}"')
-        return
+        return None
 
-    compress_xml_files(compress_xml_command)
+    witchy_subprocess(compress_xml_command)
+    print('\n>> XML files were compressed to FXR files via WitchyBND.')
+    progress_bar.set(75*norm_coef)
+    
     move_and_compress_files(paths, sfx2fn_dct, change_info)
+    progress_bar.set(90*norm_coef)
+    
     finalize_process(paths, mission_input, mission_fn, recolor_mission, change_info)
+    subprocess.Popen(f'explorer "{paths["graph_path"]}"')
+    
+    mod_engine_abs_path = str(Path(paths["mod_abs_path"]).parent).replace("\\", "/")
+    return mod_engine_abs_path
 
 ###################################################################################### 

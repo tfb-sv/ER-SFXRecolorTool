@@ -1,10 +1,16 @@
 #####################################################################################
 import warnings
-warnings.filterwarnings("ignore")
-#####################################################################################
+warnings.filterwarnings("ignore")   # for matplotlib related
+
 # TODOs
-# 3. virgülü almamalı
-# readme hint'e sfx'leri nerden bulabileceği
+
+# before palet yanlış
+# values list hala 0-1 aralığında dönüyor.
+
+# readme hint'e sfx'leri nerden bulabileceği > readme
+# siyah ekran kapatılacak
+# diğer sfx'lere destek > readme
+#####################################################################################
 
 def main():
     try: 

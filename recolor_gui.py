@@ -4,21 +4,31 @@ import sys
 import json
 import threading
 import customtkinter as ctk
+from tkinter.messagebox import showinfo
 from utils_recolor import *
 import recolor_sfx
 #####################################################################################
 
+is_debug = False
+
 config_fp = "paths_config.json"
 mission_fn = "recolor_mission.json"
-assert_text = f"The file {mission_fn} could not be found in the program directory. The program is ABORTED."
+assert_text = f"\n>> The file {mission_fn} could not be found in the program directory. The program is ABORTED.\n"
 assert os.path.exists(mission_fn), assert_text
 with open(mission_fn, "r", encoding="utf8") as f: mission_input = json.load(f)
 sfx_ids = mission_input["sfx_ids"]
 
-version_str = "3.1"
+version_str = "3.2"
 year_str = "2024"
 owner_str = "ineedthetail"
 copyright_text = f"\u00A9 {year_str} {owner_str}. All rights reserved.\nv{version_str}"
+
+all_colors = get_all_colors()
+all_colors_texts = ["black", "white", "white", "white", "black", 
+                    "black", "white", "white", "white", "black"]
+
+theme_color2 = random_init_color()
+text_color2 = all_colors_texts[all_colors.index(theme_color2)]
 
 padx_size, pady_size = 10, 10
 pad_top, pad_bot = 20, 20
@@ -26,17 +36,15 @@ pad_l, pad_r = 40, 40
 ph_text = "255, 255, 255"
 default_color = "transparent"
 theme_color1 = None
-theme_color2 = "purple"
 text_color1 = "white"
-text_color2 = "white"
 
-#####################################################
+#####################################################################################
 
 def on_closing():
     root.destroy()
     sys.exit(0)
 
-#####################################################
+#####################################################################################
     
 def update_color_box(entry, color_box, color_box_label):
     color_value = entry.get()
@@ -49,24 +57,34 @@ def update_color_box(entry, color_box, color_box_label):
         if color_value == "": color_box_label.configure(text="", bg_color=default_color)
         else: color_box_label.configure(text="Not Valid", bg_color=default_color)
         
-#####################################################
+#####################################################################################
 
 def toggle_update():
-    global color_frame, recolor_button, info_label
+    global color_frame, recolor_button, info_label, checkbox_frame
     
     if toggle_var.get() == 1: 
         color_frame.grid()
+        checkbox_frame.grid()
         recolor_button.configure(text="RECOLOR")
         info_label.configure(text=f"{len(sfx_ids)} SFX files will be recolored.")
     else: 
         color_frame.grid_remove()
+        checkbox_frame.grid_remove()
         recolor_button.configure(text="INSPECT")   
         info_label.configure(text=f"{len(sfx_ids)} SFX files will be inspected.")
 
-#####################################################        
+##################################################################################### 
+
+def get_toggle_text():
+    if toggle_var.get() == 0: text = toggle_inspect.cget("text")
+    elif toggle_var.get() == 1: text = toggle_recolor.cget("text")
+    return text
+
+#####################################################################################       
 
 def convert_rgba2hex(color_value):
     try:
+        if color_value.strip().endswith(','): return False, None, None
         color_value += ", 1.0"
         values = [float(x) if i == 3 else int(x) for i, x in enumerate(re.split(r'[,\s]+', color_value.strip()))]
         if len(values) == 4 and all(0 <= x <= 255 for x in values[:3]) and 0 <= values[3] <= 1:
@@ -76,7 +94,7 @@ def convert_rgba2hex(color_value):
         else: return False, None, None
     except ValueError: return False, None, None
 
-#####################################################
+#####################################################################################
 
 def create_main_frame(root):
     main_frame = ctk.CTkFrame(root, fg_color=theme_color1)
@@ -84,25 +102,23 @@ def create_main_frame(root):
     main_frame.columnconfigure(0, weight=1)
     return main_frame
 
-#####################################################
+#####################################################################################
 
-def create_toggle_button_frame(main_frame, row, column):
+def create_toggle_frame(main_frame, row, column):
+    global toggle_inspect, toggle_recolor
+    
     toggle_button_frame = ctk.CTkFrame(main_frame)
     toggle_button_frame.grid(row=row, column=column, padx=padx_size, pady=(pady_size + pad_top, pady_size), columnspan=3)
-    return toggle_button_frame
 
-#####################################################
-
-def create_toggle_buttons(toggle_button_frame):
     toggle_inspect = ctk.CTkRadioButton(toggle_button_frame, text="INSPECTION", variable=toggle_var, value=0, font=font_ms,
-                                        text_color=text_color2, command=toggle_update, fg_color=theme_color2)
+                                        text_color=text_color1, command=toggle_update, fg_color=theme_color2)
     toggle_inspect.grid(row=0, column=0, padx=padx_size)
 
     toggle_recolor = ctk.CTkRadioButton(toggle_button_frame, text="RECOLORING", variable=toggle_var, value=1, font=font_ms,
-                                        text_color=text_color2, command=toggle_update, fg_color=theme_color2)
+                                        text_color=text_color1, command=toggle_update, fg_color=theme_color2)
     toggle_recolor.grid(row=0, column=1, padx=padx_size)
 
-#####################################################
+#####################################################################################
 
 def create_info_label(main_frame, row, column):
     global info_label
@@ -111,20 +127,24 @@ def create_info_label(main_frame, row, column):
                               font=font_ms, text_color=text_color1)
     info_label.grid(row=row, column=column, padx=padx_size, pady=(pady_size + pad_top, pady_size))
 
-#####################################################
+#####################################################################################
+    
+def create_progress_bar(main_frame, row, column):
+    global progress_bar
+    
+    progress_bar = ctk.CTkProgressBar(main_frame, width=300,
+                                      progress_color=theme_color2, fg_color=theme_color1)
+    progress_bar.grid(row=row, column=column, padx=padx_size, pady=pady_size)
+    progress_bar.grid_remove()
 
-def create_color_frame(main_frame, row, column):
-    global color_frame
+#####################################################################################
+
+def create_color_frame(main_frame, row, column, all_colors, all_colors_texts):
+    global color_frame, entry_widgets
     
     color_frame = ctk.CTkFrame(main_frame, fg_color=theme_color1)
     color_frame.grid(row=row, column=column)
-    return color_frame
 
-#####################################################
-
-def create_color_labels_and_entries(color_frame, all_colors, all_colors_texts):
-    global entry_widgets
-    
     header_l = ctk.CTkLabel(color_frame, text="Old Color", width=100, font=font_bold,
                             text_color=text_color1, bg_color=default_color)
     header_l.grid(row=0, column=0, padx=(padx_size + pad_l, padx_size), pady=pady_size)
@@ -161,7 +181,7 @@ def create_color_labels_and_entries(color_frame, all_colors, all_colors_texts):
         
         init_color_update(color, entry, color_box, color_box_label)
 
-#####################################################
+#####################################################################################
 
 def init_color_update(color, entry, color_box, color_box_label):
     if mission_input.get("target_colors"):
@@ -174,34 +194,33 @@ def init_color_update(color, entry, color_box, color_box_label):
                 color_box.configure(fg_color=hex_color)
                 color_box_label.configure(text="", bg_color=hex_color) 
 
-#####################################################
+#####################################################################################
+
+def create_checkbox_frame(main_frame, row, column):
+    global checkbox_frame, checkbox
+    
+    checkbox_frame = ctk.CTkFrame(main_frame)
+    checkbox_frame.grid(row=row, column=column, padx=padx_size, pady=pady_size)
+    
+    checkbox = ctk.CTkCheckBox(checkbox_frame, text="", variable=checkbox_var)
+    checkbox.grid(row=0, column=0, padx=padx_size)
+    
+    checkbox_label = ctk.CTkLabel(checkbox_frame, text="Launch game after recoloring (with ModEngine2)", 
+                                  font=font_ms, text_color=text_color1)
+    checkbox_label.grid(row=0, column=1, padx=padx_size)
+
+#####################################################################################
 
 def create_recolor_button(main_frame, row, column):
+    global recolor_button
+
     recolor_button = ctk.CTkButton(main_frame, text="INSPECT", 
                                    command=lambda: threading.Thread(target=start_recoloring_procedure).start(),
                                    fg_color=theme_color2, text_color=text_color2, 
                                    width=130, height=50, font=font_size)
     recolor_button.grid(row=row, column=column, padx=padx_size, pady=(pady_size + pad_top, pady_size + pad_bot))
-    return recolor_button
 
-#####################################################
-
-def start_recoloring_procedure():
-    is_inspection = not toggle_var.get()
-    recolor_mission = {}
-    if not is_inspection:
-        for color, entry in entry_widgets.items():
-            color_value = entry.get()
-            is_color, _, rgba_list = convert_rgba2hex(color_value)
-            if is_color: recolor_mission[color] = rgba_list 
-    recolor_info = [not toggle_var.get(), recolor_mission, 
-                    config_fp, mission_fn, mission_input, sfx_ids]
-    recolor_sfx.main(recolor_info)
-    if is_inspection: 
-        toggle_var.set(1)
-        toggle_update()
-
-#####################################################
+#####################################################################################
 
 def create_copyright_label(main_frame, row, column):
     text_copyright = ctk.CTkLabel(main_frame, text=copyright_text, font=font_ms, text_color=text_color1)
@@ -209,9 +228,53 @@ def create_copyright_label(main_frame, row, column):
                         pady=(pady_size + pad_top, pady_size + pad_bot))
 
 #####################################################################################
+    
+def start_recoloring_procedure():  
+    global entry_widgets, info_label, recolor_button, progress_bar, checkbox
+    
+    is_inspection = not toggle_var.get()
+    is_run_after = checkbox_var.get()
+    mod_name = get_toggle_text()
+    
+    progress_bar.set(0)
+    progress_bar.grid()
+    info_label.configure(text=f"{mod_name.capitalize()} procedure was started, please wait..")
+    checkbox.configure(state="disabled")
+    recolor_button.configure(state="disabled")
+    
+    recolor_mission = {}
+    if not is_inspection:
+        for color, entry in entry_widgets.items():
+            entry.configure(state="disabled")
+            color_value = entry.get()
+            is_color, _, rgba_list = convert_rgba2hex(color_value)
+            if is_color: recolor_mission[color] = rgba_list 
+    recolor_info = [is_inspection, recolor_mission, 
+                    config_fp, mission_fn, mission_input, sfx_ids, is_debug]
+    mod_engine_abs_path = recolor_sfx.main(recolor_info, progress_bar)
+    progress_bar.set(1)
+    info_label.configure(text=f"{mod_name.capitalize()} was completed successfully.")
+    
+    showinfo(f"{mod_name.upper()} COMPLETED", 
+             f"{mod_name.capitalize()} was completed successfully.")
+
+    progress_bar.set(0)
+    progress_bar.grid_remove()
+    info_label.configure(text=f"{len(sfx_ids)} SFX files will be inspected.")
+    checkbox.configure(state="normal")
+    recolor_button.configure(state="normal")
+    if not is_inspection: 
+        for entry in entry_widgets.values():
+            entry.configure(state="normal")
+        if is_run_after: subprocess.run([f"{mod_engine_abs_path}/launchmod_eldenring.bat"])
+    else:
+        toggle_var.set(1)
+        toggle_update()
+
+#####################################################################################
 
 def setup_ui():
-    global root, recolor_button, toggle_var
+    global root, toggle_var, checkbox_var, progress_bar
     global font_ms, font_size, font_bold
     
     root = ctk.CTk()
@@ -226,22 +289,19 @@ def setup_ui():
     font_size = ctk.CTkFont(family=font_name, size=17, weight="bold")
     font_bold = ctk.CTkFont(family=font_name, size=16, weight="bold")
     
-    main_frame = create_main_frame(root)
     toggle_var = ctk.IntVar()
     toggle_var.set(1 if mission_input.get("target_colors") else 0)
+    checkbox_var = ctk.IntVar()
+    checkbox_var.set(0)
     
-    toggle_button_frame = create_toggle_button_frame(main_frame, 0, 0)
-    create_toggle_buttons(toggle_button_frame)
+    main_frame = create_main_frame(root)
+    create_toggle_frame(main_frame, 0, 0)
     create_info_label(main_frame, 1, 0)
-
-    color_frame = create_color_frame(main_frame, 2, 0)
-    all_colors = get_all_colors()
-    all_colors_texts = ["black", "white", "white", "white", "black", 
-                        "black", "white", "white", "white", "black"]
-    create_color_labels_and_entries(color_frame, all_colors, all_colors_texts)
-
-    recolor_button = create_recolor_button(main_frame, 3, 0)
-    create_copyright_label(main_frame, 4, 0)
+    create_progress_bar(main_frame, 2, 0)
+    create_color_frame(main_frame, 3, 0, all_colors, all_colors_texts)
+    create_checkbox_frame(main_frame, 4, 0)
+    create_recolor_button(main_frame, 5, 0)
+    create_copyright_label(main_frame, 6, 0)
 
     toggle_update()
 
