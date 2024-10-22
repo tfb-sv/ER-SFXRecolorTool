@@ -73,6 +73,7 @@ def initialize_paths(config_fn):
     elden_ring_abs_path = config["elden_ring_abs_path"]
     mod_abs_path = config["mod_abs_path"]
     witchyBND_path = config["witchyBND_abs_path"]
+    witchyBND_path += "/WitchyBND.exe"
 
     sfx_tmp_path = config["sfx_tmp_path"]
     graph_path = config["graph_path"]
@@ -280,41 +281,39 @@ def replace_first_2_lines(xml_path, first_2line):
 ######################################################################################
 
 def check_if_original_files_in_path(paths):
-    project_dir = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
-    
-    print("\n")
     main_sfx_folder_name = paths['main_sfx_folder_name']
     if not os.path.exists(f"{paths['main_path']}/{main_sfx_folder_name}"):
-        print(f'\n>> Original folder {main_sfx_folder_name} could NOT be found. It has started to be decompressed via WitchyBND.\n')
+        print(f'\n- Original folder {main_sfx_folder_name} could NOT be found. It has started to be decompressed via WitchyBND.\n')
         shutil.copyfile(f"{paths['elden_ring_abs_path']}/Game/sfx/{paths['main_sfx_file_name']}", 
                         f"{paths['main_path']}/{paths['main_sfx_file_name']}")
         decompress_main_sfx_file_command = [paths['witchyBND_abs_path'], 
                                             f"{paths['main_path']}/{paths['main_sfx_file_name']}"]
         witchy_subprocess(decompress_main_sfx_file_command)
-    else: print(f'\n>> Original folder {main_sfx_folder_name} could be found.')
-    
+    else: print(f'\n- Original folder {main_sfx_folder_name} could be found.')
+    ################################
     if not os.path.exists(f"{paths['save_path']}/{main_sfx_folder_name}"):
-        print(f'\n>> Updated folder {main_sfx_folder_name} could NOT be found. Original SFX were loaded.')
+        print(f'\n- Updated folder {main_sfx_folder_name} could NOT be found. Original SFX were loaded.')
         shutil.copytree(f"{paths['main_path']}/{main_sfx_folder_name}", 
                         f"{paths['save_path']}/{main_sfx_folder_name}")
-    else: print(f'\n>> Updated folder {main_sfx_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
-    
+    else: print(f'\n- Updated folder {main_sfx_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
+    #############################################
     main_sfx_dlc_folder_name = paths['main_sfx_dlc_folder_name']
     if not os.path.exists(f"{paths['main_path']}/{main_sfx_dlc_folder_name}"):
-        print(f'\n>> Original folder {main_sfx_dlc_folder_name} could NOT be found. It has started to be decompressed via WitchyBND.\n')
+        print(f'\n- Original folder {main_sfx_dlc_folder_name} could NOT be found. It has started to be decompressed via WitchyBND.\n')
         shutil.copyfile(f"{paths['elden_ring_abs_path']}/Game/sfx/{paths['main_sfx_dlc_file_name']}", 
                         f"{paths['main_path']}/{paths['main_sfx_dlc_file_name']}")
         decompress_main_sfx_file_command = [paths['witchyBND_abs_path'], 
                                             f"{paths['main_path']}/{paths['main_sfx_dlc_file_name']}"]
         witchy_subprocess(decompress_main_sfx_file_command)
-    else: print(f'\n>> Original folder {main_sfx_dlc_folder_name} could be found.')
-    
+    else: print(f'\n- Original folder {main_sfx_dlc_folder_name} could be found.')
+    ################################
     if not os.path.exists(f"{paths['save_path']}/{main_sfx_dlc_folder_name}"):
-        print(f'\n>> Updated folder {main_sfx_dlc_folder_name} could NOT be found. Original SFX were loaded.')
+        print(f'\n- Updated folder {main_sfx_dlc_folder_name} could NOT be found. Original SFX were loaded.')
         shutil.copytree(f"{paths['main_path']}/{main_sfx_dlc_folder_name}", 
                         f"{paths['save_path']}/{main_sfx_dlc_folder_name}")
-    else: print(f'\n>> Updated folder {main_sfx_dlc_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
-    print("\n\n")
+    else: print(f'\n- Updated folder {main_sfx_dlc_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
+    #############################################
+    print("\n")
 
 ######################################################################################
 
@@ -337,9 +336,7 @@ def process_sfx_files(sfx_ids, paths):
         else: 
             print(f">> {sfx_id} could not be found in game files !")
             continue
-        main_fp = f"{paths['main_path']}/{sfx_fn}"
         active_fp = f"{paths['active_path']}/{sfx_fn}"
-        shutil.copyfile(sfx_final_path, main_fp)
         shutil.copyfile(sfx_final_path, active_fp)
         decompress_fxr_command.append(active_fp)
     compress_xml_command = [f"{fxr_file}.xml" for fxr_file in decompress_fxr_command[1:-1]]
@@ -357,7 +354,7 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspect
             continue
         cnt += 1
         with open(xml_path, "r", encoding="utf8") as f: first_2line = f.readlines()[:2]
-        print(f">> {cnt} - {fn} has started to be processed..")
+        print(f"\t{cnt} - {fn} has started to be processed..")
         tree = ET.parse(xml_path)
         core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pre", is_debug]
         core_output = core_process(core_input)
@@ -372,7 +369,6 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspect
             replace_first_2_lines(xml_path, first_2line)
         core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pro", is_debug]
         _ = core_process(core_input)
-    print("\n")
 
 ######################################################################################
 
@@ -404,7 +400,7 @@ def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_i
     mod_abs_path = paths["mod_abs_path"]
     fp = f"{save_path}/{main_sfx_file_name}"
     fp_dlc = f"{save_path}/{main_sfx_dlc_file_name}"
-    
+
     if not os.path.exists(f"{mod_abs_path}/sfx"): os.mkdir(f"{mod_abs_path}/sfx")
     
     mod_fp = f"{mod_abs_path}/sfx/{main_sfx_file_name}"
@@ -420,10 +416,33 @@ def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_i
     curr_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     log_sn = f"logs/{mission_fn}_{curr_time}.json"
     
-    with open(log_sn, 'w', encoding='utf8') as f:
-        json.dump(mission_input, f, ensure_ascii=False, indent=4)
-    with open(mission_fn, 'w', encoding='utf8') as f:
-        json.dump(mission_input, f, ensure_ascii=False, indent=4)
+    custom_json_dumper(mission_input, log_sn)
+    custom_json_dumper(mission_input, mission_fn)
+    
     print("\n>> Recoloring was COMPLETED !\n")
 
+######################################################################################
+
+def custom_json_dumper(data, fp, indent=4):
+    with open(fp, 'w', encoding='utf8') as f:
+        f.write('{\n')
+        
+        key_text1 = f'{" " * indent}"sfx_ids": ['
+        f.write(key_text1)
+        for i, item in enumerate(data['sfx_ids']):
+            if i != 0: f.write(" " * len(key_text1))
+            f.write(f'{item}')
+            if i < len(data['sfx_ids']) - 1: f.write(',\n')
+            else: f.write('],\n')
+        
+        key_text2 = f'{" " * indent}"target_colors": {{'
+        f.write(key_text2)
+        for i, (key, value) in enumerate(data['target_colors'].items()):
+            if i != 0: f.write(" " * len(key_text2))
+            f.write(f'"{key}": {value}')
+            if i < len(data['target_colors']) - 1: f.write(',\n')
+            else: f.write('}\n')
+            
+        f.write('}')
+    
 ######################################################################################

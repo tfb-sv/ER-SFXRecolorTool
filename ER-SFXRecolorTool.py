@@ -4,11 +4,20 @@ warnings.filterwarnings("ignore")   # for matplotlib related
 
 # TODOs
 
-# before palet yanlýþ
+# info text update yazýlar
+# ignored yazýsý ekrana gelsin
+# checkbox ve progressbar pad üst alt kontrol et
 
-# readme hint'e sfx'leri nerden bulabileceði > readme
-# siyah ekran kapatýlacak
-# diðer sfx'lere destek > readme
+# several iterations due to toning? > readme
+# i have identified deðiþtir > readme
+# ?? Launch the game using > readme
+
+# console kapatýlacak > make exe py
+# examples kopyalancak > make exe py
+
+# cls eklenecek
+# testler genel 
+# nexus ve git release
 #####################################################################################
 
 def main():

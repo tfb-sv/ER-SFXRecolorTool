@@ -1,8 +1,11 @@
 #####################################################################################
+import os
 import re
 import sys
 import json
+import shutil
 import threading
+from pathlib import Path
 import customtkinter as ctk
 from tkinter.messagebox import showinfo
 from utils_recolor import *
@@ -24,6 +27,7 @@ version_str = "1.0.0"
 year_str = "2024"
 owner_str = "ineedthetail"
 copyright_text = f"\u00A9 {year_str} {owner_str}. Licensed under CC BY-NC-SA 4.0.\nv{version_str}"
+init_text = f"{len(sfx_ids)} SFX files will be inspected."
 
 all_colors = get_all_colors()
 all_colors_texts = ["black", "white", "white", "white", "black", 
@@ -56,7 +60,7 @@ def update_color_box(entry, color_box, color_box_label):
         color_box_label.configure(text="", bg_color=hex_color)
     else: 
         color_box.configure(fg_color=default_color)
-        if color_value == "": color_box_label.configure(text="", bg_color=default_color)
+        if color_value.strip() == "": color_box_label.configure(text="", bg_color=default_color)
         else: color_box_label.configure(text="Not Valid", bg_color=default_color)
         
 #####################################################################################
@@ -125,7 +129,7 @@ def create_toggle_frame(main_frame, row, column):
 def create_info_label(main_frame, row, column):
     global info_label
     
-    info_label = ctk.CTkLabel(main_frame, text=f"{len(sfx_ids)} SFX files will be inspected.", 
+    info_label = ctk.CTkLabel(main_frame, text=init_text, 
                               font=font_ms, text_color=text_color1)
     info_label.grid(row=row, column=column, padx=padx_size, pady=(pady_size + pad_top, pady_size))
 
@@ -217,7 +221,8 @@ def create_recolor_button(main_frame, row, column):
     global recolor_button
 
     recolor_button = ctk.CTkButton(main_frame, text="INSPECT", 
-                                   command=lambda: threading.Thread(target=start_recoloring_procedure).start(),
+                                   command=lambda: threading.Thread(target=start_recoloring_procedure, 
+                                                                    daemon=True).start(),
                                    fg_color=theme_color2, text_color=text_color2, 
                                    width=130, height=50, font=font_size)
     recolor_button.grid(row=row, column=column, padx=padx_size, pady=(pady_size + pad_top, pady_size + pad_bot))
@@ -237,6 +242,9 @@ def create_copyright_label(main_frame, row, column):
     
 def start_recoloring_procedure():  
     global entry_widgets, info_label, recolor_button, progress_bar, checkbox
+    global toggle_inspect, toggle_recolor
+
+    # os.system('cls')
 
     is_inspection = not toggle_var.get()
     is_run_after = checkbox_var.get()
@@ -249,6 +257,8 @@ def start_recoloring_procedure():
     info_label.configure(text=f"{mod_name.capitalize()} procedure was started, please wait..")
     checkbox.configure(state="disabled")
     recolor_button.configure(state="disabled")
+    toggle_inspect.configure(state="disabled")
+    toggle_recolor.configure(state="disabled")
     
     recolor_mission = {}
     if not is_inspection:
@@ -259,18 +269,23 @@ def start_recoloring_procedure():
             if is_color: recolor_mission[color] = rgba_list 
     recolor_info = [is_inspection, recolor_mission, 
                     config_fn, mission_fn, mission_input, sfx_ids, is_debug]
-    mod_engine_abs_path = recolor_sfx.main(recolor_info, progress_bar)
+    paths = recolor_sfx.main(recolor_info, progress_bar, info_label)
+    mod_engine_abs_path = str(Path(paths["mod_abs_path"]).parent).replace("\\", "/")
     progress_bar.set(1)
     info_label.configure(text=final_text)
     
     showinfo(f"{mod_name.upper()} COMPLETED", 
              final_text)
 
+    shutil.rmtree(paths["active_path"]) 
+    os.mkdir(paths["active_path"])
     progress_bar.set(0)
     progress_bar.grid_remove()
-    info_label.configure(text=f"{len(sfx_ids)} SFX files will be inspected.")
+    info_label.configure(text=init_text)
     checkbox.configure(state="normal")
     recolor_button.configure(state="normal")
+    toggle_inspect.configure(state="normal")
+    toggle_recolor.configure(state="normal")
     if not is_inspection: 
         for entry in entry_widgets.values():
             entry.configure(state="normal")
@@ -286,7 +301,7 @@ def setup_ui():
     global font_ms, font_size, font_bold
     
     root = ctk.CTk()
-    root.title(f"ER-SFXRecolorTool")   #  v{version_str}
+    root.title(f"ER-SFXRecolorTool")
     root.resizable(False, False)
 
     ctk.set_appearance_mode("Dark")
