@@ -4,9 +4,10 @@ import json
 import shutil
 import random
 import colorsys
-import webbrowser
 import subprocess
+import webbrowser
 import numpy as np
+import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -70,19 +71,19 @@ def open_url(): webbrowser.open("https://github.com/tfb-sv/ER-SFXRecolorTool.git
 def initialize_paths(config_fn):
     with open(config_fn, "r", encoding="utf8") as f: config = json.load(f)
 
-    elden_ring_abs_path = config["elden_ring_abs_path"]
-    mod_abs_path = config["mod_abs_path"]
-    witchyBND_path = config["witchyBND_abs_path"]
-    witchyBND_path += "/WitchyBND.exe"
+    dcx2folder_dct = {"sfxbnd_commoneffects.ffxbnd.dcx": None,
+                      "sfxbnd_commoneffects_dlc02.ffxbnd.dcx": None} 
+    
+    for dcx_fn, _ in dcx2folder_dct.items():
+        dcx2folder_dct[dcx_fn] = dcx_fn.replace(".", "-") + "-wffxbnd"
 
-    sfx_tmp_path = config["sfx_tmp_path"]
-    graph_path = config["graph_path"]
-    
-    main_sfx_file_name = config["main_sfx_file_name"]
-    main_sfx_folder_name = main_sfx_file_name.replace(".", "-") + "-wffxbnd"
-    
-    main_sfx_dlc_file_name = config["main_sfx_dlc_file_name"]
-    main_sfx_dlc_folder_name = main_sfx_dlc_file_name.replace(".", "-") + "-wffxbnd"
+    sfx_tmp_path = "sfx"
+    graph_path = "sfx_palettes"
+
+    elden_ring_abs_path = config["elden_ring_abs_path"].replace("\\", "/")
+    mod_abs_path = config["mod_abs_path"].replace("\\", "/")
+    witchyBND_path = config["witchyBND_abs_path"].replace("\\", "/")
+    witchyBND_path += "/WitchyBND.exe"
 
     main_path = f"{sfx_tmp_path}/original_files"
     save_path = f"{sfx_tmp_path}/modified_files"
@@ -104,26 +105,23 @@ def initialize_paths(config_fn):
         "witchyBND_abs_path": witchyBND_path,
         "sfx_tmp_path": sfx_tmp_path,
         "graph_path": graph_path,
-        "main_sfx_folder_name": main_sfx_folder_name,
-        "main_sfx_file_name": main_sfx_file_name,
-        "main_sfx_dlc_folder_name": main_sfx_dlc_folder_name,
-        "main_sfx_dlc_file_name": main_sfx_dlc_file_name,
         "main_path": main_path,
         "save_path": save_path,
         "active_path": active_path
     }
 
-    return paths
+    return paths, dcx2folder_dct
 
 ######################################################################################
 
 def core_process(core_input):
-    [tree, target_colors, fn, graph_path, cols, isPrePro, is_debug] = core_input
+    [tree, target_colors, fn, graph_path, cols, isPrePro, is_debug, ignoreds] = core_input
     all_rgb_groups, all_elm_groups = find_all_groups(tree)
-    chosen_rgb_groups, chosen_elm_groups = find_rgb_groups(all_rgb_groups, all_elm_groups, fn, is_debug)
+    chosen_rgb_groups, chosen_elm_groups, ignoreds = find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_debug)
     plot_input = [chosen_rgb_groups, chosen_elm_groups, target_colors, fn, graph_path, isPrePro]
     will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs = plot_colors(plot_input, cols)
-    core_output = [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, chosen_rgb_groups, chosen_elm_groups, all_rgb_groups, all_elm_groups]
+    core_output = [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, 
+                   chosen_rgb_groups, chosen_elm_groups, all_rgb_groups, all_elm_groups, ignoreds]
     return core_output
 
 ######################################################################################
@@ -180,7 +178,7 @@ def find_all_groups(tree):
 
 ######################################################################################
 
-def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, is_debug):
+def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_debug):
     chosen_rgb_groups = {}
     chosen_elm_groups = {}
     ###############################################
@@ -209,11 +207,12 @@ def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, is_debug):
         else:
             sfx_id = int(fn[1:-4])
             print(f"\n>> Does not match the pattern. IGNORED.\nSFX ID: {sfx_id} Length: {len(v)} Key: {key}\n")
-            if is_debug:
-                import pandas as pd
-                if not os.path.exists("errors"): os.mkdir("errors")
-                df = pd.DataFrame([v], columns=[f'Value{i+1}' for i in range(len(v))])
-                df.to_csv(f'errors/{key}.csv', index=False)
+            # if is_debug:
+            if not os.path.exists("errors"): os.mkdir("errors")
+            df = pd.DataFrame([v], columns=[f'Value{i+1}' for i in range(len(v))])
+            df.to_csv(f'errors/{key}.csv', index=False)
+            if not ignoreds[sfx_id]: ignoreds[fn] = [key]
+            else: ignoreds[sfx_id].extend(key)
             continue
         ###############################################
         for j in range(len(v)):
@@ -226,7 +225,7 @@ def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, is_debug):
                 chosen_rgb_groups[f"{key}_{j}_len{len(v)*4}"] = v[j]
                 chosen_elm_groups[f"{key}_{j}_len{len(v)*4}"] = elm_v[j]
         ###############################################
-    return chosen_rgb_groups, chosen_elm_groups
+    return chosen_rgb_groups, chosen_elm_groups, ignoreds
 
 ######################################################################################
 
@@ -280,86 +279,86 @@ def replace_first_2_lines(xml_path, first_2line):
 
 ######################################################################################
 
-def check_if_original_files_in_path(paths):
-    main_sfx_folder_name = paths['main_sfx_folder_name']
-    if not os.path.exists(f"{paths['main_path']}/{main_sfx_folder_name}"):
-        print(f'\n- Original folder {main_sfx_folder_name} could NOT be found. It has started to be decompressed via WitchyBND.\n')
-        shutil.copyfile(f"{paths['elden_ring_abs_path']}/Game/sfx/{paths['main_sfx_file_name']}", 
-                        f"{paths['main_path']}/{paths['main_sfx_file_name']}")
-        decompress_main_sfx_file_command = [paths['witchyBND_abs_path'], 
-                                            f"{paths['main_path']}/{paths['main_sfx_file_name']}"]
-        witchy_subprocess(decompress_main_sfx_file_command)
-    else: print(f'\n- Original folder {main_sfx_folder_name} could be found.')
-    ################################
-    if not os.path.exists(f"{paths['save_path']}/{main_sfx_folder_name}"):
-        print(f'\n- Updated folder {main_sfx_folder_name} could NOT be found. Original SFX were loaded.')
-        shutil.copytree(f"{paths['main_path']}/{main_sfx_folder_name}", 
-                        f"{paths['save_path']}/{main_sfx_folder_name}")
-    else: print(f'\n- Updated folder {main_sfx_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
+def check_dcx_folder_in_path(paths, sfx_fn, sfx_folder_name):
+    elden_ring_abs_path = paths["elden_ring_abs_path"]
+    witchyBND_path = paths["witchyBND_abs_path"]
+    main_path = paths['main_path']
+    save_path = paths['save_path']
+    sfx_fn = paths[sfx_fn]
+    sfx_folder_name = paths[sfx_folder_name]
+    ############################################# 
+    if not os.path.exists(f"{main_path}/{sfx_folder_name}"):
+        print(f'\n- Original "{sfx_folder_name}" NOT found. Decompressing original DCXs..\n')
+        from_fp = f"{elden_ring_abs_path}/Game/sfx/{sfx_fn}"
+        to_fp = f"{main_path}/{sfx_fn}"
+        command_fp = f"{main_path}/{sfx_fn}"
+        shutil.copyfile(from_fp, to_fp)
+        command = [witchyBND_path, command_fp]
+        witchy_subprocess(command)
+    else: print(f'\n- Original "{sfx_folder_name}" found.')
     #############################################
-    main_sfx_dlc_folder_name = paths['main_sfx_dlc_folder_name']
-    if not os.path.exists(f"{paths['main_path']}/{main_sfx_dlc_folder_name}"):
-        print(f'\n- Original folder {main_sfx_dlc_folder_name} could NOT be found. It has started to be decompressed via WitchyBND.\n')
-        shutil.copyfile(f"{paths['elden_ring_abs_path']}/Game/sfx/{paths['main_sfx_dlc_file_name']}", 
-                        f"{paths['main_path']}/{paths['main_sfx_dlc_file_name']}")
-        decompress_main_sfx_file_command = [paths['witchyBND_abs_path'], 
-                                            f"{paths['main_path']}/{paths['main_sfx_dlc_file_name']}"]
-        witchy_subprocess(decompress_main_sfx_file_command)
-    else: print(f'\n- Original folder {main_sfx_dlc_folder_name} could be found.')
-    ################################
-    if not os.path.exists(f"{paths['save_path']}/{main_sfx_dlc_folder_name}"):
-        print(f'\n- Updated folder {main_sfx_dlc_folder_name} could NOT be found. Original SFX were loaded.')
-        shutil.copytree(f"{paths['main_path']}/{main_sfx_dlc_folder_name}", 
-                        f"{paths['save_path']}/{main_sfx_dlc_folder_name}")
-    else: print(f'\n- Updated folder {main_sfx_dlc_folder_name} could be found. Updated SFX were loaded and PROTECTED.')
-    #############################################
+    if not os.path.exists(f"{save_path}/{sfx_folder_name}"):
+        print(f'\n- Modified "{sfx_folder_name}" NOT found. Loading original FXRs..')
+        from_fp = f"{main_path}/{sfx_folder_name}"
+        to_fp = f"{save_path}/{sfx_folder_name}"
+        shutil.copytree(from_fp, to_fp)
+    else: print(f'\n- Modified "{sfx_folder_name}" found.')
+        
+######################################################################################
+        
+def check_dcx_folders_in_paths(paths, sfx_fns):
+    for sfx_fn, sfx_folder_name in sfx_fns.items():
+        check_dcx_folder_in_path(paths, sfx_fn, sfx_folder_name)
     print("\n")
 
 ######################################################################################
 
-def process_sfx_files(sfx_ids, paths):
+def process_sfx_files(sfx_ids, paths, dcx2folder_dct):
+    main_path = paths['main_path']
+    active_path = paths['active_path']
     decompress_fxr_command = [paths["witchyBND_abs_path"]]
-    sfx2fn_dct = {}
-    change_info = [False, False]
+    sfx2dcx_dct = {}
+    change_info = {}
     for sfx_id in sfx_ids:
         sfx_fn = f"f{str(sfx_id).zfill(9)}.fxr"
-        sfx_path = f"{paths['main_path']}/{paths['main_sfx_folder_name']}/effect/{sfx_fn}"
-        sfx_dlc_path = f"{paths['main_path']}/{paths['main_sfx_dlc_folder_name']}/effect/{sfx_fn}"
-        if os.path.exists(sfx_path): 
-            sfx_final_path = sfx_path
-            sfx2fn_dct[sfx_fn] = sfx_path
-            change_info[0] = True
-        elif os.path.exists(sfx_dlc_path): 
-            sfx_final_path = sfx_dlc_path
-            sfx2fn_dct[sfx_fn] = sfx_dlc_path
-            change_info[1] = True
-        else: 
+        is_found = False
+        for dcx_fn, dcx_folder_name in dcx2folder_dct.items():
+            sfx_path = f"{main_path}/{dcx_folder_name}/effect/{sfx_fn}"
+            change_info[dcx_fn] = False
+            if os.path.exists(sfx_path): 
+                sfx_final_path = sfx_path
+                sfx2dcx_dct[sfx_fn] = sfx_path
+                change_info[dcx_fn] = True
+                is_found = True
+            if is_found: break
+        if not is_found: 
             print(f">> {sfx_id} could not be found in game files !")
             continue
-        active_fp = f"{paths['active_path']}/{sfx_fn}"
+        active_fp = f"{active_path}/{sfx_fn}"
         shutil.copyfile(sfx_final_path, active_fp)
         decompress_fxr_command.append(active_fp)
     compress_xml_command = [f"{fxr_file}.xml" for fxr_file in decompress_fxr_command[1:-1]]
     compress_xml_command = [decompress_fxr_command[0]] + compress_xml_command
-    return decompress_fxr_command, compress_xml_command, sfx2fn_dct, change_info
+    return [decompress_fxr_command, compress_xml_command, sfx2dcx_dct, change_info]
 
 ######################################################################################
 
 def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspection, is_debug):
     cnt = 0
+    ignoreds = {}
     for fn in os.listdir(active_path):
         xml_path = f"{active_path}/{fn}"
-        if not fn.endswith(".xml"): 
-            os.remove(xml_path)
-            continue
+        if not fn.endswith(".xml"): continue
         cnt += 1
         with open(xml_path, "r", encoding="utf8") as f: first_2line = f.readlines()[:2]
         print(f"\t{cnt} - {fn} has started to be processed..")
         tree = ET.parse(xml_path)
-        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pre", is_debug]
+        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pre", is_debug, ignoreds]
         core_output = core_process(core_input)
         if is_inspection: continue
-        [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, chosen_rgb_groups, chosen_elm_groups, all_rgb_groups, all_elm_groups] = core_output
+        ###############################################
+        [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, 
+         chosen_rgb_groups, chosen_elm_groups, all_rgb_groups, all_elm_groups, ignoreds] = core_output
         will_be_changed_rgbs_new = create_toning(will_be_changed_rgbs, will_be_changed_clrs, recolor_mission)
         for key, elms in will_be_changed_elms.items():
             new_rgb_values = will_be_changed_rgbs_new[key]
@@ -367,47 +366,39 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspect
                 elms[i].set('Value', str(new_rgb_values[i])) 
             tree.write(xml_path)
             replace_first_2_lines(xml_path, first_2line)
-        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pro", is_debug]
-        _ = core_process(core_input)
+        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pro", is_debug, ignoreds]
+        core_output = core_process(core_input)
+    ignoreds = core_output[7]
+    return ignoreds
 
 ######################################################################################
 
-def move_and_compress_files(paths, sfx2fn_dct, change_info):
+def move_and_compress_files(paths, sfx2dcx_dct, change_info, dcx2folder_dct):
     active_path = paths["active_path"]
     save_path = paths["save_path"]
-    main_sfx_folder_name = paths["main_sfx_folder_name"]
-    main_sfx_dlc_folder_name = paths["main_sfx_dlc_folder_name"]
     witchyBND_path = paths["witchyBND_abs_path"]
     for fn in os.listdir(active_path):
         from_path = f"{active_path}/{fn}"
         if fn.endswith(".fxr"): 
-            final_dest = sfx2fn_dct[fn]
+            final_dest = sfx2dcx_dct[fn]
             shutil.move(from_path, final_dest) 
-        else: os.remove(from_path)
-    if change_info[0]:
-        witchy_subprocess([witchyBND_path, f"{save_path}/{main_sfx_folder_name}"])
-        print(f'\n>> Folder {main_sfx_folder_name} was compressed via WitchyBND.')
-    if change_info[1]:
-        witchy_subprocess([witchyBND_path, f"{save_path}/{main_sfx_dlc_folder_name}"])
-        print(f'\n>> Folder {main_sfx_dlc_folder_name} was compressed via WitchyBND.')
+    for dcx_fn, is_changed in change_info.items():
+        if is_changed:
+            dcx_folder_name = dcx2folder_dct[dcx_fn]
+            print(f'\n>> Compressing "{dcx_folder_name}"..')
+            witchy_subprocess([witchyBND_path, f"{save_path}/{dcx_folder_name}"])
 
 ######################################################################################
 
 def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_info):
     save_path = paths["save_path"]
-    main_sfx_file_name = paths["main_sfx_file_name"]
-    main_sfx_dlc_file_name = paths["main_sfx_dlc_file_name"]
     mod_abs_path = paths["mod_abs_path"]
-    fp = f"{save_path}/{main_sfx_file_name}"
-    fp_dlc = f"{save_path}/{main_sfx_dlc_file_name}"
-
     if not os.path.exists(f"{mod_abs_path}/sfx"): os.mkdir(f"{mod_abs_path}/sfx")
     
-    mod_fp = f"{mod_abs_path}/sfx/{main_sfx_file_name}"
-    mod_fp_dlc = f"{mod_abs_path}/sfx/{main_sfx_dlc_file_name}"
-    
-    if change_info[0]: shutil.copyfile(fp, mod_fp)
-    if change_info[1]: shutil.copyfile(fp_dlc, mod_fp_dlc)
+    for dcx_fn, is_changed in change_info.items():
+        fp = f"{save_path}/{dcx_fn}"
+        mod_fp = f"{mod_abs_path}/sfx/{dcx_fn}"
+        if is_changed: shutil.copyfile(fp, mod_fp)
     
     for color, rgba in recolor_mission.items():
         mission_input["target_colors"][color] = rgba

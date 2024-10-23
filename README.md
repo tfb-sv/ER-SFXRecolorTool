@@ -6,7 +6,6 @@
 
 # Elden Ring SFX Recolor Tool
 
-## Overview
 **ER-SFXRecolorTool** is a modding tool for Elden Ring that automates and simplifies the SFX (FXR) recoloring process, particularly the cumbersome task of finding and adjusting RGBA values within the XML files. *I have identified a pattern for RGBA values in the XML files and utilized this information into this tool.*
 
 - [NexusMods Page](https://www.nexusmods.com/eldenring/mods/xxxx)
@@ -28,7 +27,7 @@
 2. Place the downloaded folder in a directory, such as the `Users` directory, *where file read/write permissions are unrestricted*.
 
 ## Configuration
-- Modify the first three lines in the `path_config.json` to reflect your system paths.
+- Modify the `path_config.json` to reflect your system paths.
 - Enter the SFX (FXR) numbers you want to modify into the `recolor_mission.json`.
 
 ## Usage
@@ -76,7 +75,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
 
-ER-SFXRecolorTool is built using the following licensed work:
+ER-SFXRecolorTool is built using the following licensed work(s):
 - [WitchyBND](https://github.com/ividyon/WitchyBND.git) by [ividyon](https://github.com/ividyon) (see [License](https://github.com/ividyon/WitchyBND/blob/main/LICENSE))
 
 [cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/

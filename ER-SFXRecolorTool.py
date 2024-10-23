@@ -4,25 +4,23 @@ warnings.filterwarnings("ignore")   # for matplotlib related
 
 # TODOs
 
-# info text update yazýlar
-# ignored yazýsý ekrana gelsin
-# checkbox ve progressbar pad üst alt kontrol et
+# readme
+# checkbox ve progressbar pad ust alt kontrol et
+# nexus ve git release
 
 # several iterations due to toning? > readme
-# i have identified deðiþtir > readme
+# i have identified degistir > readme
 # ?? Launch the game using > readme
-
-# console kapatýlacak > make exe py
-# examples kopyalancak > make exe py
-
-# cls eklenecek
-# testler genel 
-# nexus ve git release
+# birkaç düzine denendi ama baþarýlý siyah vs problem > readme
+# update için simply sil ve yenisini koy > readme
+# f str > os > readme
+# after recolor pencere checkbox > readme
+# extensive tests > readme
 #####################################################################################
 
 def main():
     try: 
-        import recolor_gui
+        from utils import recolor_gui
         
         recolor_gui.setup_ui()
     except Exception as e:

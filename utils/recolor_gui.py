@@ -8,7 +8,7 @@ import threading
 from pathlib import Path
 import customtkinter as ctk
 from tkinter.messagebox import showinfo
-from utils_recolor import *
+from utils.utils_recolor import *
 import recolor_sfx
 #####################################################################################
 
@@ -254,7 +254,7 @@ def start_recoloring_procedure():
 
     progress_bar.set(0)
     progress_bar.grid()
-    info_label.configure(text=f"{mod_name.capitalize()} procedure was started, please wait..")
+    info_label.configure(text=f"{mod_name.capitalize()} procedure was started..")
     checkbox.configure(state="disabled")
     recolor_button.configure(state="disabled")
     toggle_inspect.configure(state="disabled")
@@ -269,13 +269,14 @@ def start_recoloring_procedure():
             if is_color: recolor_mission[color] = rgba_list 
     recolor_info = [is_inspection, recolor_mission, 
                     config_fn, mission_fn, mission_input, sfx_ids, is_debug]
-    paths = recolor_sfx.main(recolor_info, progress_bar, info_label)
+    paths, ignoreds = recolor_sfx.main(recolor_info, progress_bar, info_label)
     mod_engine_abs_path = str(Path(paths["mod_abs_path"]).parent).replace("\\", "/")
     progress_bar.set(1)
     info_label.configure(text=final_text)
     
-    showinfo(f"{mod_name.upper()} COMPLETED", 
-             final_text)
+    total_ignoreds = sum(len(color_key_lst) for color_key_lst in ignoreds.values())
+    final_text += f" In total {total_ignoreds} color within {len(ignoreds.keys())} SFXs were IGNORED."
+    showinfo(f"{mod_name.upper()} COMPLETED", final_text)
 
     shutil.rmtree(paths["active_path"]) 
     os.mkdir(paths["active_path"])
