@@ -6,7 +6,7 @@
 
 # Elden Ring SFX Recolor Tool
 
-**ER-SFXRecolorTool** is a modding tool for Elden Ring that automates and simplifies the SFX (FXR) recoloring process, particularly the cumbersome task of finding and adjusting RGBA values within the XML files. *I have identified a pattern for RGBA values in the XML files and utilized this information into this tool.*
+**ER-SFXRecolorTool** is a modding tool for Elden Ring that automates and simplifies the SFX (FXR) recoloring procedure, particularly the cumbersome task of finding and adjusting RGBA values within the XML files. The tool is built upon a pattern I identified in the RGBA values within the XML files, and this information is used throughout the tool.
 
 - [NexusMods Page](https://www.nexusmods.com/eldenring/mods/xxxx)
 
@@ -39,7 +39,7 @@
 5. Review the color palettes displayed, and decide which colors to change.
 6. Enter new RGB values for the colors you want to change into the tool's interface.
 7. Click the **RECOLOR** button.
-8. ?? Launch the game using **ModEngine2** after the recoloring session is complete, no further action is needed.
+8. Launch the game using **ModEngine2** after the recoloring session is complete, no further action is needed.
 9. (Optional) Fine-tune entered RGB values as needed. You may repeat the recoloring session from **RECOLORING** mode and check the effects in-game after each adjustment until the results meet your satisfaction.
 
 ## Additional Information
@@ -50,23 +50,24 @@
 - To completely reset all modifications and start from scratch, simply delete the `sfx/modified_files` folder.
 - If there are no mods in the `ModEngine2` folder, use `ModEngine2/mod` as one of the required inputs for the `path_config.json`.
 - You need to edit the `ModEngine2/config_eldenring.toml` for the **Launch game after recoloring** checkbox option if you are using a mod folder name that is different from the default.
+- To update the tool, simply replace the existing tool folder with the new version.
 - JSON files are editable with text editors like **Notepad++**.
 
 ## Hints
 - Group similar SFX files together for bulk modifications and restart the tool for the recoloring session of each group.
-- Several iterations may be needed until a satisfactory result is achieved.
+- Several iterations may be needed to achieve a satisfactory result due to in-game lightning settings and a basic toning approach.
 - SFX IDs can be seen within the [Blacksmith](https://github.com/vawser/Smithbox.git) under tabs like **Bullet**, **SpEffectVfxParam**, etc. Alternatively, [FromSoftware FXR IDS](https://docs.google.com/spreadsheets/d/1gmUiSpJtxFFl0g04MWMIIs37W13Yjp-WUxtbyv99JIQ/edit?gid=866341224#gid=866341224) or similar Google spreadsheets can also be used to obtain SFX IDs.
 
 ## TODOs
 1. Incorporate CLI commands into the tool.
 2. Add support for other SFX-related DCX files, beyond the `sfxbnd_commoneffects.ffxbnd.dcx` and the `sfxbnd_commoneffects_dlc02.ffxbnd.dcx`.
 3. Remove the need to restart the tool for changes in the `recolor_mission.json` to take effect.
-4. Integrate the alpha (opacity) value into the tool??procedure.
+4. Integrate the alpha (opacity) value into the recoloring procedure.
+5. Switch f-strings used for handling path operations to the `os` module.
+6. Link the window that opens after recoloring to a checkbox.
 
 ## Contributing
-Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. ?? Please report any anomalies or `IGNORED` outputs seen in the command line.
-
-Your feedback?? helps improve the tool for all users!
+Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files from the `errors` folder in your bug or issue report would be greatly appreciated.
 
 ## License
 © 2024 [ineedthetail](https://github.com/tfb-sv).
@@ -75,7 +76,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
 
-ER-SFXRecolorTool is built using the following licensed work(s):
+ER-SFXRecolorTool uses the following licensed work(s):
 - [WitchyBND](https://github.com/ividyon/WitchyBND.git) by [ividyon](https://github.com/ividyon) (see [License](https://github.com/ividyon/WitchyBND/blob/main/LICENSE))
 
 [cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
