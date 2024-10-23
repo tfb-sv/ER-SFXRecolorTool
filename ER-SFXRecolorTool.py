@@ -1,21 +1,6 @@
 #####################################################################################
 import warnings
 warnings.filterwarnings("ignore")   # for matplotlib related
-
-# TODOs
-
-# readme
-# checkbox ve progressbar pad ust alt kontrol et
-# nexus ve git release
-
-# several iterations due to toning? > readme
-# i have identified degistir > readme
-# ?? Launch the game using > readme
-# birkaç düzine denendi ama başarılı siyah vs problem > readme
-# update için simply sil ve yenisini koy > readme
-# f str > os > readme
-# after recolor pencere checkbox > readme
-# extensive tests > readme
 #####################################################################################
 
 def main():

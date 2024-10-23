@@ -4,7 +4,7 @@ import subprocess
 #####################################################################################
 
 def run_pyinstaller(main_script, spec_fn, icon_fn, is_debug):
-    print(f"PyInstaller-0 is started.")
+    print(f"\nPyInstaller-0 is started.")
     command_0 = ["pyinstaller", "-y", "-i", icon_fn]
     if is_debug: command_0.append("-c")
     # add_fns = ["", ""]
@@ -27,6 +27,7 @@ def run_pyinstaller(main_script, spec_fn, icon_fn, is_debug):
     ###############################################
     if result.returncode != 0: print(f"Error during PyInstaller-1: {result.stderr}")
     else: print(f"PyInstaller-1 successful: {result.stdout}")
+    print("\n")
 
 #####################################################################################
 

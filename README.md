@@ -1,7 +1,7 @@
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
 <p align="center">
-  <img src="https://github.com/tfb-sv/ER-SFXRecolorTool/blob/main/recolor_icon.png?raw=true" />
+  <img src="https://github.com/tfb-sv/ER-SFXRecolorTool/blob/main/builder/recolor_icon.png?raw=true" />
 </p>
 
 # Elden Ring SFX Recolor Tool
