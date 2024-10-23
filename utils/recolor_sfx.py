@@ -35,7 +35,7 @@ def main(recolor_info, progress_bar, info_label):
     if is_inspection: stage_text4 = "Inspecting SFXs.."
     else: stage_text4 = "Recoloring SFXs.."
     info_label.configure(text=stage_text4)
-    print(f"\n>> {stage_text4}\n")
+    print(f"\n>> {stage_text4}")
     graph_path = paths["graph_path"]
     total_ignoreds = process_xml_files(recolor_mission_norm, paths["active_path"], graph_path, 
                                        graph_clm_cnt, is_inspection, is_debug)
@@ -60,7 +60,7 @@ def main(recolor_info, progress_bar, info_label):
     #################################
     stage_text7 = "Moving DCXs.."
     info_label.configure(text=stage_text7)
-    print(f"\n>> {stage_text7}\n")
+    print(f"\n>> {stage_text7}")
     finalize_process(paths, mission_input, mission_fn, recolor_mission, change_info)
     subprocess.Popen(f'explorer "{graph_path}"')
     return paths, total_ignoreds

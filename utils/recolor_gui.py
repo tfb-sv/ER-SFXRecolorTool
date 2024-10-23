@@ -295,7 +295,7 @@ def start_recoloring_procedure(sep_width=100):
     else:
         toggle_var.set(1)
         toggle_update()
-    print("=" * sep_width)    
+    print(f'{"=" * sep_width}\n')    
 
 #####################################################################################
 
