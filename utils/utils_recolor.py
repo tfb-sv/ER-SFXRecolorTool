@@ -206,7 +206,7 @@ def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_debug):
         ###############################################
         else:
             sfx_id = int(fn[1:-4])
-            print(f"\n>> Does not match the pattern. IGNORED.\nSFX ID: {sfx_id} Length: {len(v)} Key: {key}\n")
+            print(f"\n>> Does not match the pattern, IGNORED.\nSFX ID: {sfx_id} Length: {len(v)} Key: {key}\n")
             # if is_debug:
             if not os.path.exists("errors"): os.mkdir("errors")
             df = pd.DataFrame([v], columns=[f'Value{i+1}' for i in range(len(v))])
@@ -279,37 +279,34 @@ def replace_first_2_lines(xml_path, first_2line):
 
 ######################################################################################
 
-def check_dcx_folder_in_path(paths, sfx_fn, sfx_folder_name):
+def check_dcx_folder_in_path(paths, dcx_fn, dcx_folder_name):
     elden_ring_abs_path = paths["elden_ring_abs_path"]
     witchyBND_path = paths["witchyBND_abs_path"]
     main_path = paths['main_path']
     save_path = paths['save_path']
-    sfx_fn = paths[sfx_fn]
-    sfx_folder_name = paths[sfx_folder_name]
     ############################################# 
-    if not os.path.exists(f"{main_path}/{sfx_folder_name}"):
-        print(f'\n- Original "{sfx_folder_name}" NOT found. Decompressing original DCXs..\n')
-        from_fp = f"{elden_ring_abs_path}/Game/sfx/{sfx_fn}"
-        to_fp = f"{main_path}/{sfx_fn}"
-        command_fp = f"{main_path}/{sfx_fn}"
+    if not os.path.exists(f"{main_path}/{dcx_folder_name}"):
+        print(f'\n\t- Original "{dcx_folder_name}" NOT found. Decompressing original DCXs..\n')
+        from_fp = f"{elden_ring_abs_path}/Game/sfx/{dcx_fn}"
+        to_fp = f"{main_path}/{dcx_fn}"
+        command_fp = f"{main_path}/{dcx_fn}"
         shutil.copyfile(from_fp, to_fp)
         command = [witchyBND_path, command_fp]
         witchy_subprocess(command)
-    else: print(f'\n- Original "{sfx_folder_name}" found.')
+    else: print(f'\n\t- Original "{dcx_folder_name}" found.')
     #############################################
-    if not os.path.exists(f"{save_path}/{sfx_folder_name}"):
-        print(f'\n- Modified "{sfx_folder_name}" NOT found. Loading original FXRs..')
-        from_fp = f"{main_path}/{sfx_folder_name}"
-        to_fp = f"{save_path}/{sfx_folder_name}"
+    if not os.path.exists(f"{save_path}/{dcx_folder_name}"):
+        print(f'\n\t- Modified "{dcx_folder_name}" NOT found. Loading original FXRs..')
+        from_fp = f"{main_path}/{dcx_folder_name}"
+        to_fp = f"{save_path}/{dcx_folder_name}"
         shutil.copytree(from_fp, to_fp)
-    else: print(f'\n- Modified "{sfx_folder_name}" found.')
+    else: print(f'\n\t- Modified "{dcx_folder_name}" found.')
         
 ######################################################################################
         
-def check_dcx_folders_in_paths(paths, sfx_fns):
-    for sfx_fn, sfx_folder_name in sfx_fns.items():
-        check_dcx_folder_in_path(paths, sfx_fn, sfx_folder_name)
-    print("\n")
+def check_dcx_folders_in_paths(paths, dcx2folder_dct):
+    for dcx_fn, dcx_folder_name in dcx2folder_dct.items():
+        check_dcx_folder_in_path(paths, dcx_fn, dcx_folder_name)
 
 ######################################################################################
 
@@ -332,7 +329,7 @@ def process_sfx_files(sfx_ids, paths, dcx2folder_dct):
                 is_found = True
             if is_found: break
         if not is_found: 
-            print(f">> {sfx_id} could not be found in game files !")
+            print(f">> {sfx_id} NOT found in game files.")
             continue
         active_fp = f"{active_path}/{sfx_fn}"
         shutil.copyfile(sfx_final_path, active_fp)
@@ -351,7 +348,7 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspect
         if not fn.endswith(".xml"): continue
         cnt += 1
         with open(xml_path, "r", encoding="utf8") as f: first_2line = f.readlines()[:2]
-        print(f"\t{cnt} - {fn} has started to be processed..")
+        print(f'\t{cnt} - Processing "{fn}"..')
         tree = ET.parse(xml_path)
         core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pre", is_debug, ignoreds]
         core_output = core_process(core_input)
@@ -410,7 +407,7 @@ def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_i
     custom_json_dumper(mission_input, log_sn)
     custom_json_dumper(mission_input, mission_fn)
     
-    print("\n>> Recoloring was COMPLETED !\n")
+    print("\n>> Recoloring was COMPLETED.\n")
 
 ######################################################################################
 

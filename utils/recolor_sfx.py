@@ -16,7 +16,7 @@ def main(recolor_info, progress_bar, info_label):
     info_label.configure(text=stage_text1)
     print(f"\n>> {stage_text1}")
     paths, dcx2folder_dct = initialize_paths(config_fn)
-    check_dcx_folders_in_paths(paths)
+    check_dcx_folders_in_paths(paths, dcx2folder_dct)
     progress_bar.set(15*norm_coef)
     #################################
     stage_text2 = "Moving FXRs.."
@@ -28,20 +28,21 @@ def main(recolor_info, progress_bar, info_label):
     #################################
     stage_text3 = "Decompressing FXRs to XMLs.."
     info_label.configure(text=stage_text3)
-    print(f'\n>> {stage_text3}\n')
+    print(f'\n>> {stage_text3}')
     witchy_subprocess(decompress_fxr_command)
     progress_bar.set(45*norm_coef)
     #################################
-    stage_text4 = "Recoloring SFXs.."
+    if is_inspection: stage_text4 = "Inspecting SFXs.."
+    else: stage_text4 = "Recoloring SFXs.."
     info_label.configure(text=stage_text4)
     print(f"\n>> {stage_text4}\n")
+    graph_path = paths["graph_path"]
     total_ignoreds = process_xml_files(recolor_mission_norm, paths["active_path"], graph_path, 
                                        graph_clm_cnt, is_inspection, is_debug)
     progress_bar.set(60*norm_coef)
     #################################
-    graph_path = paths["graph_path"]
     if is_inspection:
-        print("\n>> Inspection was COMPLETED !\n")
+        print("\n>> Inspection was COMPLETED.\n")
         subprocess.Popen(f'explorer "{graph_path}"')
         return paths, total_ignoreds
     ###################################################
@@ -53,7 +54,7 @@ def main(recolor_info, progress_bar, info_label):
     #################################
     stage_text6 = "Compressing FXRs to DCXs.."
     info_label.configure(text=stage_text6)
-    print(f"\n>> {stage_text6}\n")
+    print(f"\n>> {stage_text6}")
     move_and_compress_files(paths, sfx2dcx_dct, change_info, dcx2folder_dct)
     progress_bar.set(90*norm_coef)
     #################################

@@ -9,7 +9,7 @@ from pathlib import Path
 import customtkinter as ctk
 from tkinter.messagebox import showinfo
 from utils.utils_recolor import *
-import recolor_sfx
+from utils import recolor_sfx
 #####################################################################################
 
 is_debug = False
@@ -23,7 +23,7 @@ assert os.path.exists(mission_fn), assert_mission_text
 with open(mission_fn, "r", encoding="utf8") as f: mission_input = json.load(f)
 sfx_ids = mission_input["sfx_ids"]
 
-version_str = "1.0.0"
+version_str = "1.0.0.0"
 year_str = "2024"
 owner_str = "ineedthetail"
 copyright_text = f"\u00A9 {year_str} {owner_str}. Licensed under CC BY-NC-SA 4.0.\nv{version_str}"
@@ -240,7 +240,7 @@ def create_copyright_label(main_frame, row, column):
 
 #####################################################################################
     
-def start_recoloring_procedure():  
+def start_recoloring_procedure(sep_width=100):  
     global entry_widgets, info_label, recolor_button, progress_bar, checkbox
     global toggle_inspect, toggle_recolor
 
@@ -259,7 +259,7 @@ def start_recoloring_procedure():
     recolor_button.configure(state="disabled")
     toggle_inspect.configure(state="disabled")
     toggle_recolor.configure(state="disabled")
-    
+
     recolor_mission = {}
     if not is_inspection:
         for color, entry in entry_widgets.items():
@@ -275,7 +275,8 @@ def start_recoloring_procedure():
     info_label.configure(text=final_text)
     
     total_ignoreds = sum(len(color_key_lst) for color_key_lst in ignoreds.values())
-    final_text += f" In total {total_ignoreds} color within {len(ignoreds.keys())} SFXs were IGNORED."
+    if len(ignoreds.keys()) != 0:
+        final_text += f" In total {total_ignoreds} color within {len(ignoreds.keys())} SFXs were IGNORED."
     showinfo(f"{mod_name.upper()} COMPLETED", final_text)
 
     shutil.rmtree(paths["active_path"]) 
@@ -294,6 +295,7 @@ def start_recoloring_procedure():
     else:
         toggle_var.set(1)
         toggle_update()
+    print("=" * sep_width)    
 
 #####################################################################################
 
