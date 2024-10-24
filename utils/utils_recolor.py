@@ -310,7 +310,7 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols,
         sfx_id = int(fn[1:-8])
         xml_path = f"{active_path}/{fn}"
         with open(xml_path, "r", encoding="utf8") as f: first_2line = f.readlines()[:2]
-        print(f'\t{cnt} - Processing "{sfx_id}"..')
+        print(f'\t{cnt + 1} - Processing SFX {sfx_id}..')
         progress_text = f"{progress_text_main} ({cnt + 1}/{len(all_xmls)})"
         info_label.configure(text=progress_text)
         progress_number = mn + (cnt * (percentage_range / len(all_xmls)))

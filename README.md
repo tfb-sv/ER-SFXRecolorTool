@@ -23,7 +23,7 @@
 
 ## Installation
 1. Download the latest release of this tool.
-2. Place the downloaded folder in a directory, such as the `Users` directory, where file read/write permissions are unrestricted.
+2. Place the downloaded folder in a directory, such as the `Users`, where file read/write permissions are unrestricted.
 
 ## Configuration
 - Modify the `path_config.json` to reflect your system paths.
@@ -39,19 +39,18 @@
 6. Enter new RGB values for the colors you want to change into the tool's interface.
 7. Click the **RECOLOR** button.
 8. Launch the game using **ModEngine2** after the recoloring session is complete, no further action is needed.
-9. (Optional) Fine-tune entered RGB values as needed. You may repeat the recoloring session from **RECOLORING** mode and check the effects in-game after each adjustment until the results meet your satisfaction.
+9. (Optional) Fine-tune entered RGB values as needed. You may repeat the recoloring session in **RECOLORING** mode and check the effects in-game after each adjustment until the results meet your expectations.
 
 ## Additional Information
 - Logs are stored with a datetime tag in the `logs` folder for each recoloring session.
 - Changes are saved in the `recolor_mission.json`, which automatically loads when the tool starts.
-- The before and after colors of the SFX are available in the `sfx_palettes`, which is reset at the beginning of each recoloring session.
-- The inspection session is not strictly necessary, but it serves as an important sanity check.
+- The before and after colors of the SFX are available in the `sfx_palettes`, which is reset at the beginning of each session.
 - To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files` folder.
 - To update the tool, simply replace the existing tool folder with the new version.
 
 ## Hints
 - Group similar SFX files together for bulk modifications and restart the tool for the recoloring session of each group.
-- Several iterations may be needed to achieve a satisfactory result due to in-game lightning settings and a basic toning approach.
+- Several iterations may be needed to achieve the desired result due to in-game lightning settings and the simplicity of the toning approach.
 - SFX IDs can be seen within the [Blacksmith](https://github.com/vawser/Smithbox.git) under tabs like **Bullet**, **SpEffectVfxParam**, etc. Alternatively, [FromSoftware FXR IDS](https://docs.google.com/spreadsheets/d/1gmUiSpJtxFFl0g04MWMIIs37W13Yjp-WUxtbyv99JIQ/edit?gid=866341224#gid=866341224) or similar Google spreadsheets can also be used to obtain SFX IDs.
 
 ## TODOs

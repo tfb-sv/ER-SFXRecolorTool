@@ -237,7 +237,7 @@ def start_recoloring_procedure(sep_width=100):
             if is_color: recolor_mission[color] = rgba_list 
     recolor_info = [is_inspection, recolor_mission, 
                     config_fn, mission_fn, mission_input, sfx_ids]
-    paths, ignoreds, not_exists = recolor_sfx.main(recolor_info, progress_bar, info_label)
+    paths, ignoreds, not_exists = recolor_sfx.main(recolor_info, progress_bar, info_label, is_run_after)
     mod_engine_abs_path = str(Path(paths["mod_abs_path"]).parent).replace("\\", "/")
     progress_bar.set(1)
     if ignoreds or not_exists: final_text += " with problems."

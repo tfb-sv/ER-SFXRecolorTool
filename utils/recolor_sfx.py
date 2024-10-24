@@ -1,7 +1,7 @@
 import subprocess
 from utils.utils_recolor import *
 
-def main(recolor_info, progress_bar, info_label):
+def main(recolor_info, progress_bar, info_label, is_run_after):
     [is_inspection, recolor_mission, config_fn, mission_fn, 
      mission_input, sfx_ids] = recolor_info
     graph_clm_cnt = 6
@@ -61,5 +61,5 @@ def main(recolor_info, progress_bar, info_label):
     info_label.configure(text=stage_text7)
     print(f"\n>> {stage_text7}")
     finalize_process(paths, mission_input, mission_fn, recolor_mission, change_info)
-    subprocess.Popen(f'explorer "{graph_path}"')
+    if not is_run_after: subprocess.Popen(f'explorer "{graph_path}"')
     return paths, total_ignoreds, not_exists
