@@ -16,19 +16,18 @@
 - Download [WitchyBND](https://github.com/ividyon/WitchyBND.git) to your computer.
 
 ## Notes
-- This tool is specifically designed to operate on the **Windows** platform.
-- The tool does not make any changes to the original game folder, ensuring the integrity of the game files is maintained.
+- Does not make any changes to the original game folder, ensuring the integrity of the game files is maintained.
 - Applies toning to entered RGB values, making the recoloring appear more realistic and aesthetically pleasing.
 - No manual transfers of SFX-related files or folders are required.
 - Black, white, and gray colors as target colors have not been extensively tested, and the in-game results may not be as desired.
 
 ## Installation
 1. Download the latest release of this tool.
-2. Place the downloaded folder in a directory, such as the `Users` directory, *where file read/write permissions are unrestricted*.
+2. Place the downloaded folder in a directory, such as the `Users` directory, where file read/write permissions are unrestricted.
 
 ## Configuration
 - Modify the `path_config.json` to reflect your system paths.
-- Enter the SFX (FXR) numbers you want to modify into the `recolor_mission.json`.
+- Enter the SFX (FXR) IDs you want to modify into the `recolor_mission.json`.
 
 ## Usage
 0. Ensure that the steps outlined in the **Configuration** section are completed.
@@ -47,11 +46,8 @@
 - Changes are saved in the `recolor_mission.json`, which automatically loads when the tool starts.
 - The before and after colors of the SFX are available in the `sfx_palettes`, which is reset at the beginning of each recoloring session.
 - The inspection session is not strictly necessary, but it serves as an important sanity check.
-- To completely reset all modifications and start from scratch, simply delete the `sfx/modified_files` folder.
-- If there are no mods in the `ModEngine2` folder, use `ModEngine2/mod` as one of the required inputs for the `path_config.json`.
-- You need to edit the `ModEngine2/config_eldenring.toml` for the **Launch game after recoloring** checkbox option if you are using a mod folder name that is different from the default.
+- To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files` folder.
 - To update the tool, simply replace the existing tool folder with the new version.
-- JSON files are editable with text editors like **Notepad++**.
 
 ## Hints
 - Group similar SFX files together for bulk modifications and restart the tool for the recoloring session of each group.
@@ -67,7 +63,7 @@
 6. Link the window that opens after recoloring to a checkbox.
 
 ## Contributing
-Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files from the `errors` folder in your bug or issue report would be greatly appreciated.
+Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your bug or issue report would be greatly appreciated.
 
 ## License
 © 2024 [ineedthetail](https://github.com/tfb-sv).

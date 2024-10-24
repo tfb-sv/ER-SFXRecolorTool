@@ -1,4 +1,3 @@
-######################################################################################
 import os
 import json
 import shutil
@@ -13,7 +12,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from xml.etree import ElementTree as ET
 sns.set_theme(rc={'figure.figsize':(18, 18)}, font_scale=1.8, style="white")
-######################################################################################
 
 def rgb_to_color_name(rgb):
     r, g, b = rgb[:3]
@@ -31,14 +29,10 @@ def rgb_to_color_name(rgb):
     elif hue_angle < 350: return 'pink', hue_angle, l, s
     elif hue_angle >= 350: return 'red', hue_angle, l, s
 
-######################################################################################
-
 def get_all_colors():
     all_colors = ["white", "black", "gray", "red", "orange", 
                   "yellow", "green", "blue", "purple", "pink"]
     return all_colors
-
-######################################################################################
 
 def random_init_color():
     all_colors = get_all_colors()
@@ -47,14 +41,10 @@ def random_init_color():
     random_color = random.choice(filtered_colors)
     return random_color
 
-######################################################################################
-
 def witchy_subprocess(command):
     witchy_silent_argument = "-s"   # previously it was "-p"
     command.append(witchy_silent_argument)
     _ = subprocess.run(command)
-
-######################################################################################
 
 def prepare_recolor_mission(recolor_mission):
     all_colors = get_all_colors()
@@ -62,43 +52,37 @@ def prepare_recolor_mission(recolor_mission):
     recolor_mission = {color: [value / 255 for value in rgb] for color, rgb in recolor_mission.items()}
     return recolor_mission
 
-######################################################################################
-
 def open_url(): webbrowser.open("https://github.com/tfb-sv/ER-SFXRecolorTool.git")
 
-######################################################################################
+def obtain_all_sfx_files():
+    dcx2folder_dct = {"sfxbnd_commoneffects.ffxbnd.dcx": None,
+                      "sfxbnd_commoneffects_dlc02.ffxbnd.dcx": None} 
+    for dcx_fn, _ in dcx2folder_dct.items():
+        dcx2folder_dct[dcx_fn] = dcx_fn.replace(".", "-") + "-wffxbnd"
+    dcx2folder_dct = speed_up_search(dcx2folder_dct)
+    return dcx2folder_dct
+
+def speed_up_search(dcx2folder_dct): return dcx2folder_dct   # order common sfx fns to the top
 
 def initialize_paths(config_fn):
     with open(config_fn, "r", encoding="utf8") as f: config = json.load(f)
-
-    dcx2folder_dct = {"sfxbnd_commoneffects.ffxbnd.dcx": None,
-                      "sfxbnd_commoneffects_dlc02.ffxbnd.dcx": None} 
-    
-    for dcx_fn, _ in dcx2folder_dct.items():
-        dcx2folder_dct[dcx_fn] = dcx_fn.replace(".", "-") + "-wffxbnd"
-
+    dcx2folder_dct = obtain_all_sfx_files()
     sfx_tmp_path = "sfx"
     graph_path = "sfx_palettes"
-
     elden_ring_abs_path = config["elden_ring_abs_path"].replace("\\", "/")
     mod_abs_path = config["mod_abs_path"].replace("\\", "/")
     witchyBND_path = config["witchyBND_abs_path"].replace("\\", "/")
     witchyBND_path += "/WitchyBND.exe"
-
     main_path = f"{sfx_tmp_path}/original_files"
     save_path = f"{sfx_tmp_path}/modified_files"
     active_path = f"{sfx_tmp_path}/active_files"
-
     if not os.path.exists(sfx_tmp_path): os.mkdir(sfx_tmp_path)
-    
     if not os.path.exists(main_path): os.mkdir(main_path)
     if not os.path.exists(save_path): os.mkdir(save_path)
     if os.path.exists(active_path): shutil.rmtree(active_path) 
     os.mkdir(active_path)
-    
     if os.path.exists(graph_path): shutil.rmtree(graph_path) 
     os.mkdir(graph_path)
-
     paths = {
         "elden_ring_abs_path": elden_ring_abs_path,
         "mod_abs_path": mod_abs_path,
@@ -109,22 +93,17 @@ def initialize_paths(config_fn):
         "save_path": save_path,
         "active_path": active_path
     }
-
     return paths, dcx2folder_dct
 
-######################################################################################
-
 def core_process(core_input):
-    [tree, target_colors, fn, graph_path, cols, isPrePro, is_debug, ignoreds] = core_input
+    [tree, target_colors, fn, graph_path, cols, isPrePro, is_inspection, ignoreds] = core_input
     all_rgb_groups, all_elm_groups = find_all_groups(tree)
-    chosen_rgb_groups, chosen_elm_groups, ignoreds = find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_debug)
+    chosen_rgb_groups, chosen_elm_groups, ignoreds = find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_inspection)
     plot_input = [chosen_rgb_groups, chosen_elm_groups, target_colors, fn, graph_path, isPrePro]
     will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs = plot_colors(plot_input, cols)
     core_output = [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, 
                    chosen_rgb_groups, chosen_elm_groups, all_rgb_groups, all_elm_groups, ignoreds]
     return core_output
-
-######################################################################################
 
 def create_toning(will_be_changed_rgbs, will_be_changed_clrs, recolor_mission):
     color_groups = {color: [] for color in recolor_mission.keys()}
@@ -143,18 +122,14 @@ def create_toning(will_be_changed_rgbs, will_be_changed_clrs, recolor_mission):
         will_be_changed_rgbs_new[key] = fixed_newest_rgb
     return will_be_changed_rgbs_new
 
-######################################################################################
-
 def fix_rgb_values(new_rgb):
     fixed_rgb = []
     for value in new_rgb:
         fixed_value = value
-        if value < 0: fixed_value = - value   # diff = 0 - value   # 0 + (diff)
+        if value < 0: fixed_value = -value   # diff = 0 - value   # 0 + (diff)
         elif value > 1: fixed_value = 2 - value   # diff = value - 1   # 1 - (diff)
         fixed_rgb.append(fixed_value)
     return fixed_rgb
-
-######################################################################################
 
 def find_all_groups(tree):
     root = tree.getroot()
@@ -176,17 +151,13 @@ def find_all_groups(tree):
             cnt += 1
     return all_rgb_groups, all_elm_groups
 
-######################################################################################
-
-def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_debug):
+def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_inspection):
     chosen_rgb_groups = {}
     chosen_elm_groups = {}
-    ###############################################
     for key, v in all_rgb_groups.items():
         elm_v = all_elm_groups[key]
         color_type = key.split("_")[1]
         if color_type in ["One", "Curve2"]: continue
-        ###############################################
         if len(v) in [4, 18, 23, 28, 33, 38]:
             if len(v) == 18: 
                 del v[7:9]
@@ -203,18 +174,16 @@ def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_debug):
             assert len(v) % 4 == 0
             v = [v[i:i+4] for i in range(0, len(v), 4)]  
             elm_v = [elm_v[i:i+4] for i in range(0, len(elm_v), 4)]
-        ###############################################
         else:
-            sfx_id = int(fn[1:-4])
-            print(f"\n>> Does not match the pattern, IGNORED.\nSFX ID: {sfx_id} Length: {len(v)} Key: {key}\n")
-            # if is_debug:
-            if not os.path.exists("errors"): os.mkdir("errors")
-            df = pd.DataFrame([v], columns=[f'Value{i+1}' for i in range(len(v))])
-            df.to_csv(f'errors/{key}.csv', index=False)
-            if not ignoreds[sfx_id]: ignoreds[fn] = [key]
-            else: ignoreds[sfx_id].extend(key)
+            if is_inspection:
+                sfx_id = int(fn[1:-4])
+                print(f"\n>> Does not match the pattern, IGNORED.\nSFX ID: {sfx_id} Length: {len(v)} Key: {key}\n")
+                if not os.path.exists("errors"): os.mkdir("errors")
+                df = pd.DataFrame([v], columns=[f'Value{i+1}' for i in range(len(v))])
+                df.to_csv(f'errors/{sfx_id}-{key}.csv', index=False)
+                if not ignoreds[sfx_id]: ignoreds[fn] = [key]
+                else: ignoreds[sfx_id].extend(key)
             continue
-        ###############################################
         for j in range(len(v)):
             isAllColor = True
             for k in range(len(v[j])):
@@ -224,10 +193,7 @@ def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_debug):
             if isAllColor: 
                 chosen_rgb_groups[f"{key}_{j}_len{len(v)*4}"] = v[j]
                 chosen_elm_groups[f"{key}_{j}_len{len(v)*4}"] = elm_v[j]
-        ###############################################
     return chosen_rgb_groups, chosen_elm_groups, ignoreds
-
-######################################################################################
 
 def plot_colors(plot_input, cols):
     [chosen_rgb_groups, chosen_elm_groups, target_colors, fn, sp, isPrePro] = plot_input
@@ -258,7 +224,11 @@ def plot_colors(plot_input, cols):
                 ha='center', va='center', color="black",
                 transform=ax.transAxes,
                 bbox=dict(facecolor='white'))
-        rgb_text = f"{int(np.round(rgb[0]*255, 0))}, {int(np.round(rgb[1]*255, 0))}, {int(np.round(rgb[2]*255, 0))}, {np.round(rgb[3], 2)}"
+        rgbs = [int(np.round(rgb[0]*255, 0)),
+                int(np.round(rgb[1]*255, 0)),
+                int(np.round(rgb[2]*255, 0)),
+                np.round(rgb[3], 2)]
+        rgb_text = f"{rgbs[0]}, {rgbs[1]}, {rgbs[2]}, {rgbs[3]}"
         ax.text(0.5, 0.9, rgb_text, fontsize=10, 
                 ha='center', va='top', color="black",
                 transform=ax.transAxes,
@@ -270,21 +240,16 @@ def plot_colors(plot_input, cols):
     fig.suptitle(f"\n{fn} > All Colors ({isBeforeAfter})\n", fontsize=35)
     plt.savefig(f"{sp}/{fn.split('.')[0]}_{isPrePro}.png", dpi=300, bbox_inches='tight')
     return will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs
-    
-######################################################################################
 
 def replace_first_2_lines(xml_path, first_2line):
     with open(xml_path, "r", encoding="utf8") as f: new_xml = f.readlines()[1:]
     with open(xml_path, "w", encoding="utf8") as f: f.write(''.join(first_2line) + ''.join(new_xml))
-
-######################################################################################
 
 def check_dcx_folder_in_path(paths, dcx_fn, dcx_folder_name):
     elden_ring_abs_path = paths["elden_ring_abs_path"]
     witchyBND_path = paths["witchyBND_abs_path"]
     main_path = paths['main_path']
     save_path = paths['save_path']
-    ############################################# 
     if not os.path.exists(f"{main_path}/{dcx_folder_name}"):
         print(f'\n\t- Original "{dcx_folder_name}" NOT found. Decompressing original DCXs..\n')
         from_fp = f"{elden_ring_abs_path}/Game/sfx/{dcx_fn}"
@@ -294,7 +259,6 @@ def check_dcx_folder_in_path(paths, dcx_fn, dcx_folder_name):
         command = [witchyBND_path, command_fp]
         witchy_subprocess(command)
     else: print(f'\n\t- Original "{dcx_folder_name}" found.')
-    #############################################
     if not os.path.exists(f"{save_path}/{dcx_folder_name}"):
         print(f'\n\t- Modified "{dcx_folder_name}" NOT found. Loading original FXRs..')
         from_fp = f"{main_path}/{dcx_folder_name}"
@@ -302,13 +266,9 @@ def check_dcx_folder_in_path(paths, dcx_fn, dcx_folder_name):
         shutil.copytree(from_fp, to_fp)
     else: print(f'\n\t- Modified "{dcx_folder_name}" found.')
         
-######################################################################################
-        
 def check_dcx_folders_in_paths(paths, dcx2folder_dct):
     for dcx_fn, dcx_folder_name in dcx2folder_dct.items():
         check_dcx_folder_in_path(paths, dcx_fn, dcx_folder_name)
-
-######################################################################################
 
 def process_sfx_files(sfx_ids, paths, dcx2folder_dct):
     main_path = paths['main_path']
@@ -316,6 +276,7 @@ def process_sfx_files(sfx_ids, paths, dcx2folder_dct):
     decompress_fxr_command = [paths["witchyBND_abs_path"]]
     sfx2dcx_dct = {}
     change_info = {}
+    not_exists = []
     for sfx_id in sfx_ids:
         sfx_fn = f"f{str(sfx_id).zfill(9)}.fxr"
         is_found = False
@@ -330,30 +291,35 @@ def process_sfx_files(sfx_ids, paths, dcx2folder_dct):
             if is_found: break
         if not is_found: 
             print(f">> {sfx_id} NOT found in game files.")
+            not_exists.append(sfx_id)
             continue
         active_fp = f"{active_path}/{sfx_fn}"
         shutil.copyfile(sfx_final_path, active_fp)
         decompress_fxr_command.append(active_fp)
     compress_xml_command = [f"{fxr_file}.xml" for fxr_file in decompress_fxr_command[1:-1]]
     compress_xml_command = [decompress_fxr_command[0]] + compress_xml_command
-    return [decompress_fxr_command, compress_xml_command, sfx2dcx_dct, change_info]
+    return [decompress_fxr_command, compress_xml_command, sfx2dcx_dct, change_info, not_exists]
 
-######################################################################################
-
-def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspection, is_debug):
-    cnt = 0
+def process_xml_files(recolor_mission, active_path, graph_path, cols, 
+                      is_inspection, info_label, progress_bar, norm_coef, mn, mx):
+    progress_text_main = info_label.cget("text")
+    percentage_range = mx - mn
     ignoreds = {}
-    for fn in os.listdir(active_path):
+    all_xmls = [fn for fn in os.listdir(active_path) if fn.endswith(".xml")]
+    for cnt, fn in enumerate(all_xmls):
+        sfx_id = int(fn[1:-8])
         xml_path = f"{active_path}/{fn}"
-        if not fn.endswith(".xml"): continue
-        cnt += 1
         with open(xml_path, "r", encoding="utf8") as f: first_2line = f.readlines()[:2]
-        print(f'\t{cnt} - Processing "{fn}"..')
+        print(f'\t{cnt} - Processing "{sfx_id}"..')
+        progress_text = f"{progress_text_main} ({cnt + 1}/{len(all_xmls)})"
+        info_label.configure(text=progress_text)
+        progress_number = mn + (cnt * (percentage_range / len(all_xmls)))
+        assert mx > progress_number
+        progress_bar.set(progress_number * norm_coef)
         tree = ET.parse(xml_path)
-        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pre", is_debug, ignoreds]
+        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pre", is_inspection, ignoreds]
         core_output = core_process(core_input)
         if is_inspection: continue
-        ###############################################
         [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, 
          chosen_rgb_groups, chosen_elm_groups, all_rgb_groups, all_elm_groups, ignoreds] = core_output
         will_be_changed_rgbs_new = create_toning(will_be_changed_rgbs, will_be_changed_clrs, recolor_mission)
@@ -363,12 +329,9 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols, is_inspect
                 elms[i].set('Value', str(new_rgb_values[i])) 
             tree.write(xml_path)
             replace_first_2_lines(xml_path, first_2line)
-        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pro", is_debug, ignoreds]
-        core_output = core_process(core_input)
-    ignoreds = core_output[7]
+        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pro", is_inspection, ignoreds]
+        _ = core_process(core_input)
     return ignoreds
-
-######################################################################################
 
 def move_and_compress_files(paths, sfx2dcx_dct, change_info, dcx2folder_dct):
     active_path = paths["active_path"]
@@ -385,36 +348,26 @@ def move_and_compress_files(paths, sfx2dcx_dct, change_info, dcx2folder_dct):
             print(f'\n>> Compressing "{dcx_folder_name}"..')
             witchy_subprocess([witchyBND_path, f"{save_path}/{dcx_folder_name}"])
 
-######################################################################################
-
 def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_info):
     save_path = paths["save_path"]
     mod_abs_path = paths["mod_abs_path"]
     if not os.path.exists(f"{mod_abs_path}/sfx"): os.mkdir(f"{mod_abs_path}/sfx")
-    
     for dcx_fn, is_changed in change_info.items():
         fp = f"{save_path}/{dcx_fn}"
         mod_fp = f"{mod_abs_path}/sfx/{dcx_fn}"
         if is_changed: shutil.copyfile(fp, mod_fp)
-    
     for color, rgba in recolor_mission.items():
-        mission_input["target_colors"][color] = rgba
-        
+        mission_input["target_colors"][color] = rgba 
     if not os.path.exists("logs"): os.mkdir("logs")
     curr_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     log_sn = f"logs/{mission_fn}_{curr_time}.json"
-    
     custom_json_dumper(mission_input, log_sn)
     custom_json_dumper(mission_input, mission_fn)
-    
     print("\n>> Recoloring was COMPLETED.\n")
-
-######################################################################################
 
 def custom_json_dumper(data, fp, indent=4):
     with open(fp, 'w', encoding='utf8') as f:
         f.write('{\n')
-        
         key_text1 = f'{" " * indent}"sfx_ids": ['
         f.write(key_text1)
         for i, item in enumerate(data['sfx_ids']):
@@ -422,7 +375,6 @@ def custom_json_dumper(data, fp, indent=4):
             f.write(f'{item}')
             if i < len(data['sfx_ids']) - 1: f.write(',\n')
             else: f.write('],\n')
-        
         key_text2 = f'{" " * indent}"target_colors": {{'
         f.write(key_text2)
         for i, (key, value) in enumerate(data['target_colors'].items()):
@@ -430,7 +382,4 @@ def custom_json_dumper(data, fp, indent=4):
             f.write(f'"{key}": {value}')
             if i < len(data['target_colors']) - 1: f.write(',\n')
             else: f.write('}\n')
-            
         f.write('}')
-    
-######################################################################################
