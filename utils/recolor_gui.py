@@ -8,7 +8,7 @@ from pathlib import Path
 import customtkinter as ctk
 from tkinter.messagebox import showinfo
 from utils.utils_recolor import *
-from utils import recolor_sfx
+from utils import recolor_sfx, app_proj_name, version_str
 
 config_fn = "paths_config.json"
 mission_fn = "recolor_mission.json"
@@ -19,7 +19,6 @@ assert os.path.exists(mission_fn), assert_mission_text
 with open(mission_fn, "r", encoding="utf8") as f: mission_input = json.load(f)
 sfx_ids = mission_input["sfx_ids"]
 
-version_str = "1.0.0.0"
 year_str = "2024"
 owner_str = "ineedthetail"
 copyright_text = f"\u00A9 {year_str} {owner_str}. Licensed under CC BY-NC-SA 4.0.\nv{version_str}"
@@ -279,7 +278,7 @@ def setup_ui():
     global font_ms, font_size, font_bold
 
     root = ctk.CTk()
-    root.title(f"ER-SFXRecolorTool")
+    root.title(f"{app_proj_name}")
     root.resizable(False, False)
 
     ctk.set_appearance_mode("Dark")

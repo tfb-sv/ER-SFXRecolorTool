@@ -8,6 +8,8 @@ set PYTHON_EXE=%CONDA_DIR%\envs\%ENV_NAME%\python.exe
 CALL %CONDA_DIR%\Scripts\activate.bat %ENV_NAME%
 cd %MAIN_DIR%
 
-%PYTHON_EXE% builder\builder.py
+set PYTHONPATH=%MAIN_DIR%
+
+%PYTHON_EXE% builders\builder.py
 
 pause

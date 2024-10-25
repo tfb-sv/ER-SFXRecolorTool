@@ -251,20 +251,20 @@ def check_dcx_folder_in_path(paths, dcx_fn, dcx_folder_name):
     main_path = paths['main_path']
     save_path = paths['save_path']
     if not os.path.exists(f"{main_path}/{dcx_folder_name}"):
-        print(f'\n\t- Original "{dcx_folder_name}" NOT found. Decompressing original DCXs..\n')
+        print(f'\t- Original "{dcx_folder_name}" NOT found. Decompressing original DCXs..')
         from_fp = f"{elden_ring_abs_path}/Game/sfx/{dcx_fn}"
         to_fp = f"{main_path}/{dcx_fn}"
         command_fp = f"{main_path}/{dcx_fn}"
         shutil.copyfile(from_fp, to_fp)
         command = [witchyBND_path, command_fp]
         witchy_subprocess(command)
-    else: print(f'\n\t- Original "{dcx_folder_name}" found.')
+    else: print(f'\t- Original "{dcx_folder_name}" found.')
     if not os.path.exists(f"{save_path}/{dcx_folder_name}"):
-        print(f'\n\t- Modified "{dcx_folder_name}" NOT found. Loading original FXRs..')
+        print(f'\t- Modified "{dcx_folder_name}" NOT found. Loading original FXRs..')
         from_fp = f"{main_path}/{dcx_folder_name}"
         to_fp = f"{save_path}/{dcx_folder_name}"
         shutil.copytree(from_fp, to_fp)
-    else: print(f'\n\t- Modified "{dcx_folder_name}" found.')
+    else: print(f'\t- Modified "{dcx_folder_name}" found.')
         
 def check_dcx_folders_in_paths(paths, dcx2folder_dct):
     for dcx_fn, dcx_folder_name in dcx2folder_dct.items():

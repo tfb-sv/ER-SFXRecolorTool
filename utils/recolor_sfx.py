@@ -12,7 +12,7 @@ def main(recolor_info, progress_bar, info_label, is_run_after):
 
     stage_text1 = "Decompressing DCXs to FXRs.."
     info_label.configure(text=stage_text1)
-    print(f"\n>> {stage_text1}")
+    print(f"\n>> {stage_text1}\n")
     paths, dcx2folder_dct = initialize_paths(config_fn)
     check_dcx_folders_in_paths(paths, dcx2folder_dct)
     progress_bar.set(15 * norm_coef)
