@@ -245,15 +245,15 @@ def start_recoloring_procedure(sep_width=100):
     info_label.configure(text=final_text)
 
     if not_exists:
-        final_text += "\n\nBelow SFXs NOT FOUND:"
-        for sfx_id in not_exists:
-            final_text += f"- {sfx_id}"
+        final_text += f"\nBelow {len(not_exists.keys())} SFX(s) NOT FOUND:"
+        for cnt, sfx_id in enumerate(not_exists.keys()):
+            final_text += f"{cnt + 1} - {sfx_id}"
     if ignoreds:
         total_ignoreds = sum(len(color_key_lst) for color_key_lst in ignoreds.values())
-        final_text += f"\n\n{total_ignoreds} color within {len(ignoreds.keys())} SFXs were IGNORED."
+        final_text += f"\n{total_ignoreds} color(s) within {len(ignoreds.keys())} SFX(s) were IGNORED."
     if ignoreds or not_exists: 
-        final_text += '\n\nPlease report the above problem(s) along with the CSV file(s) in the "errors" folder'
-        final_text += ' as a bug on NexusMods, which can be accessed by clicking the copyright text.'
+        final_text += '\nPlease report the above problem(s) along with the CSV file(s) in the "errors" folder'
+        final_text += ' as an issue on the GitHub repository, which can be accessed by clicking the copyright text.'
     showinfo(f"{mod_name.upper()} COMPLETED", final_text)
 
     shutil.rmtree(paths["active_path"]) 

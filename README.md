@@ -62,7 +62,7 @@
 6. Link the window that opens after recoloring to a checkbox.
 
 ## Contributing
-Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your bug or issue report would be greatly appreciated.
+Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
 
 ## License
 © 2024 [ineedthetail](https://github.com/tfb-sv).
