@@ -6,7 +6,7 @@
 
 # Elden Ring SFX Recolor Tool
 
-**ER-SFXRecolorTool** is a modding tool for Elden Ring that automates and simplifies the SFX (FXR) recoloring procedure, particularly the cumbersome task of finding and adjusting RGBA values within the XML files. The tool is built upon some patterns I identified for RGBA values within the XML files, and this information is utilized in the tool.
+**ER-SFXRecolorTool** is a modding tool for Elden Ring that automates and simplifies the SFX (FXR) recoloring procedure, particularly the cumbersome task of finding and adjusting RGBA values within the XML files. The tool is built upon some patterns I identified for RGBA values within the XML files.
 
 - [NexusMods Page](https://www.nexusmods.com/eldenring/mods/6795)
 
@@ -46,13 +46,13 @@
 - Logs are stored with a datetime tag in the `logs` folder for each recoloring session.
 - Changes are saved in the `recolor_mission.json`, which automatically loads when the tool starts.
 - The before and after colors of the SFX are available in the `sfx_palettes`, which is reset at the beginning of each session.
-- To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files` folder.
+- To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files`.
 - To update the tool, simply replace the existing tool folder with the new version.
-- Processes may take some time to complete, especially the DCX compression process.
+- Processes may take some time to complete, especially the compression of DCXs.
 
 ## Hints
 - Group similar SFX files together for bulk modifications and restart the tool for the recoloring session of each group.
-- Several iterations may be needed to achieve the desired result due to in-game lightning settings and the simplicity of the toning approach.
+- Several iterations may be needed to achieve the desired result due to the simplicity of the toning approach.
 - SFX IDs can be seen within the [Blacksmith](https://github.com/vawser/Smithbox.git) under tabs like **Bullet**, **SpEffectVfxParam**, etc. Alternatively, [FromSoftware FXR IDS](https://docs.google.com/spreadsheets/d/1gmUiSpJtxFFl0g04MWMIIs37W13Yjp-WUxtbyv99JIQ/edit?gid=866341224#gid=866341224) or similar Google spreadsheets can also be used to obtain SFX IDs.
 
 ## TODOs
@@ -62,7 +62,7 @@
 4. Integrate the alpha (opacity) value into the recoloring procedure.
 5. Switch f-strings used for handling path operations to the `os` module.
 7. Explore more reliable toning approaches.
-8. Apply the quick compress option for the DCX compression process.
+8. Apply the quick compress option for the DCX compression processes.
 9. Include a button to open the tool folder.
 
 ## Contributing
