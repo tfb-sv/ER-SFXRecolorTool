@@ -51,7 +51,7 @@ def main(args):
     copy_things(app_proj_name, will_copied_things)
 
     dist_folder = f"dist"
-    zip_fp = f"dist/{app_proj_name}-v{version_str}"
+    zip_fp = f"{app_proj_name}-v{version_str}"
     if not is_debug: shutil.make_archive(zip_fp, 'zip', dist_folder)
 
 if __name__ == '__main__': 
