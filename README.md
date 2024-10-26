@@ -16,7 +16,7 @@
 - Download [WitchyBND](https://github.com/ividyon/WitchyBND.git) to your computer.
 
 ## Notes
-- This tool is specifically designed to operate on the **Windows** platform.
+- Specifically designed to operate on the **Windows** platform.
 - Does not make any changes to the original game folder, ensuring the integrity of the game files is maintained.
 - Applies toning to entered RGB values, making the recoloring appear more realistic and aesthetically pleasing.
 - No manual transfers of SFX-related files or folders are required.
@@ -27,7 +27,7 @@
 2. Place the downloaded folder in a directory, such as the `Users`, where file read/write permissions are unrestricted.
 
 ## Configuration
-- Modify the `path_config.json` to reflect your system paths.
+- Modify the `paths_config.json` to reflect your system paths.
 - Enter the SFX (FXR) IDs you want to modify into the `recolor_mission.json`.
 
 ## Usage
@@ -48,7 +48,7 @@
 - The before and after colors of the SFX are available in the `sfx_palettes`, which is reset at the beginning of each session.
 - To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files` folder.
 - To update the tool, simply replace the existing tool folder with the new version.
-- Processes may take some time to complete.
+- Processes may take some time to complete, especially the DCX compression process.
 
 ## Hints
 - Group similar SFX files together for bulk modifications and restart the tool for the recoloring session of each group.
@@ -61,7 +61,9 @@
 3. Remove the need to restart the tool for changes in the `recolor_mission.json` to take effect.
 4. Integrate the alpha (opacity) value into the recoloring procedure.
 5. Switch f-strings used for handling path operations to the `os` module.
-7. Explore more viable toning approaches.
+7. Explore more reliable toning approaches.
+8. Apply the quick compress option for the DCX compression process.
+9. Include a button to open the program folder.
 
 ## Contributing
 Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
