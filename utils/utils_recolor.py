@@ -251,20 +251,20 @@ def check_dcx_folder_in_path(paths, dcx_fn, dcx_folder_name):
     main_path = paths['main_path']
     save_path = paths['save_path']
     if not os.path.exists(f"{main_path}/{dcx_folder_name}"):
-        print(f'\t- Original "{dcx_folder_name}" NOT found. Decompressing original DCXs..')
+        print(f'\t- Decompressing original "{dcx_folder_name}"..')
         from_fp = f"{elden_ring_abs_path}/Game/sfx/{dcx_fn}"
         to_fp = f"{main_path}/{dcx_fn}"
         command_fp = f"{main_path}/{dcx_fn}"
         shutil.copyfile(from_fp, to_fp)
         command = [witchyBND_path, command_fp]
         witchy_subprocess(command)
-    else: print(f'\t- Original "{dcx_folder_name}" found.')
+    else: print(f'\t- Found original "{dcx_folder_name}".')
     if not os.path.exists(f"{save_path}/{dcx_folder_name}"):
-        print(f'\t- Modified "{dcx_folder_name}" NOT found. Loading original FXRs..')
+        print(f'\t- Loading modified "{dcx_folder_name}"..')
         from_fp = f"{main_path}/{dcx_folder_name}"
         to_fp = f"{save_path}/{dcx_folder_name}"
         shutil.copytree(from_fp, to_fp)
-    else: print(f'\t- Modified "{dcx_folder_name}" found.')
+    else: print(f'\t- Found modified "{dcx_folder_name}".')
         
 def check_dcx_folders_in_paths(paths, dcx2folder_dct):
     for dcx_fn, dcx_folder_name in dcx2folder_dct.items():
@@ -285,7 +285,7 @@ def process_sfx_files(sfx_ids, paths, dcx2folder_dct):
             change_info[dcx_fn] = False
             if os.path.exists(sfx_path): 
                 sfx_final_path = sfx_path
-                sfx2dcx_dct[sfx_fn] = sfx_path
+                sfx2dcx_dct[sfx_fn] = dcx_folder_name
                 change_info[dcx_fn] = True
                 is_found = True
             if is_found: break
@@ -340,12 +340,12 @@ def move_and_compress_files(paths, sfx2dcx_dct, change_info, dcx2folder_dct):
     for fn in os.listdir(active_path):
         from_path = f"{active_path}/{fn}"
         if fn.endswith(".fxr"): 
-            final_dest = sfx2dcx_dct[fn]
+            final_dest = f"{save_path}/{sfx2dcx_dct[fn]}/effect/{fn}"
             shutil.move(from_path, final_dest) 
-    for dcx_fn, is_changed in change_info.items():
+    for cnt, (dcx_fn, is_changed) in enumerate(change_info.items()):
         if is_changed:
             dcx_folder_name = dcx2folder_dct[dcx_fn]
-            print(f'\n>> Compressing "{dcx_folder_name}"..')
+            print(f'\t{cnt + 1} - Compressing "{dcx_folder_name}"..')
             witchy_subprocess([witchyBND_path, f"{save_path}/{dcx_folder_name}"])
 
 def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_info):

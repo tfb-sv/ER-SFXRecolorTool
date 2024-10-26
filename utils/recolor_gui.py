@@ -18,12 +18,14 @@ assert os.path.exists(config_fn), assert_config_text
 assert os.path.exists(mission_fn), assert_mission_text
 with open(mission_fn, "r", encoding="utf8") as f: mission_input = json.load(f)
 sfx_ids = mission_input["sfx_ids"]
+assert len(sfx_ids) > 0
+suffix = "" if len(sfx_ids) == 1 else "s"
 
 year_str = "2024"
 owner_str = "ineedthetail"
 copyright_text = f"\u00A9 {year_str} {owner_str}. Licensed under CC BY-NC-SA 4.0.\nv{version_str}"
-init_text_inspection = f"{len(sfx_ids)} SFX file(s) will be inspected."
-init_text_recoloring = f"{len(sfx_ids)} SFX file(s) will be recolored."
+init_text_inspection = f"{len(sfx_ids)} SFX file{suffix} will be inspected."
+init_text_recoloring = f"{len(sfx_ids)} SFX file{suffix} will be recolored."
 
 all_colors = get_all_colors()
 all_colors_texts = ["black", "white", "white", "white", "black", 
@@ -236,22 +238,26 @@ def start_recoloring_procedure(sep_width=100):
             if is_color: recolor_mission[color] = rgba_list 
     recolor_info = [is_inspection, recolor_mission, 
                     config_fn, mission_fn, mission_input, sfx_ids]
-    paths, ignoreds, not_exists = recolor_sfx.main(recolor_info, progress_bar, info_label, is_run_after)
-    mod_engine_abs_path = str(Path(paths["mod_abs_path"]).parent).replace("\\", "/")
+    paths, ignoreds, not_exists = recolor_sfx.main(recolor_info, progress_bar, info_label, 
+                                                   is_run_after, suffix)
     progress_bar.set(1)
     if ignoreds or not_exists: final_text += " with problems."
     else: final_text += " successfully."
     info_label.configure(text=final_text)
 
     if not_exists:
-        final_text += f"\nBelow {len(not_exists.keys())} SFX(s) NOT FOUND:"
+        final_text += f"\nBelow {len(not_exists.keys())} SFX{suffix} NOT FOUND:\n"
         for cnt, sfx_id in enumerate(not_exists.keys()):
             final_text += f"{cnt + 1} - {sfx_id}"
     if ignoreds:
         total_ignoreds = sum(len(color_key_lst) for color_key_lst in ignoreds.values())
-        final_text += f"\n{total_ignoreds} color(s) within {len(ignoreds.keys())} SFX(s) were IGNORED."
+        was_were = "was" if suffix == "" else "were"
+        final_text += f"\n{total_ignoreds} color{suffix} within {len(ignoreds.keys())} SFX{suffix} {was_were} IGNORED."
     if ignoreds or not_exists: 
-        final_text += '\nPlease report the above problem(s) along with the CSV file(s) in the "errors" folder'
+        tmp_suffix = "" if len(ignoreds.keys()) == 1 else "s"
+        final_text += f'\nPlease report the above problem{tmp_suffix}'
+        if ignoreds:
+            final_text += f' along with the CSV file{tmp_suffix} in the "errors" folder'
         final_text += ' as an issue on the GitHub repository, which can be accessed by clicking the copyright text.'
     showinfo(f"{mod_name.upper()} COMPLETED", final_text)
 
@@ -267,7 +273,10 @@ def start_recoloring_procedure(sep_width=100):
     if not is_inspection: 
         for entry in entry_widgets.values():
             entry.configure(state="normal")
-        if is_run_after: subprocess.run([f"{mod_engine_abs_path}/launchmod_eldenring.bat"])
+        if is_run_after: 
+            mod_engine_abs_path = str(Path(paths["mod_abs_path"]).parent).replace("\\", "/")
+            launch_command = [f"{mod_engine_abs_path}/launchmod_eldenring.bat"]
+            subprocess.run(launch_command, cwd=mod_engine_abs_path)
     else:
         toggle_var.set(1)
         toggle_update()

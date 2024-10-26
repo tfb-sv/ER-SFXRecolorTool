@@ -24,25 +24,35 @@ def run_pyinstaller(main_script, spec_fn, icon_fn, is_debug):
     else: print(f"PyInstaller with .SPEC file is successful: {result.stdout}")
     print("\n")
 
+def copy_things(app_proj_name, will_copied_things):
+    for from_fp, copy_type in will_copied_things.items():
+        to_fp = f"dist/{app_proj_name}/{from_fp}"
+        if copy_type == "folder": shutil.copytree(from_fp, to_fp)
+        elif copy_type == "file": shutil.copyfile(from_fp, to_fp)
+
+def delete_things(will_deleted_folders):
+    for delete_path in will_deleted_folders:
+        if os.path.exists(delete_path): shutil.rmtree(delete_path)
+
 def main(args): 
     app_py_fn = f"{app_proj_name.replace('-', '_')}.py"
     app_spec_fn = f"{app_proj_name}.spec"
     app_icon_fn = "builders/recolor_icon.ico"
     is_debug = args.is_debug
 
-    will_deleted_folders = ["build", "dist", "utils/__pycache__", "__pycache__"]
-    for delete_path in will_deleted_folders:
-        if os.path.exists(delete_path): shutil.rmtree(delete_path)
+    will_deleted_things = ["build", "dist", "utils/__pycache__", "__pycache__"]
+    delete_things(will_deleted_things)
 
     run_pyinstaller(app_py_fn, app_spec_fn, app_icon_fn, is_debug)
 
-    from_fp = "examples"
-    to_fp = f"dist/{app_proj_name}/{from_fp}"
-    shutil.copytree(from_fp, to_fp)
+    will_copied_things = {"examples": "folder",
+                          "recolor_mission.json": "file",
+                          "paths_config.json": "file"}
+    copy_things(app_proj_name, will_copied_things)
 
-    dist_folder = f"dist/{app_proj_name}"
+    dist_folder = f"dist"
     zip_fp = f"dist/{app_proj_name}-v{version_str}"
-    if not is_debug: shutil.make_archive(output_filename, 'zip', dist_folder)
+    if not is_debug: shutil.make_archive(zip_fp, 'zip', dist_folder)
 
 if __name__ == '__main__': 
     parser = argparse.ArgumentParser()

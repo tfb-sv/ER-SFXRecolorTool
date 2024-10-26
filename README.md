@@ -16,6 +16,7 @@
 - Download [WitchyBND](https://github.com/ividyon/WitchyBND.git) to your computer.
 
 ## Notes
+- This tool is specifically designed to operate on the **Windows** platform.
 - Does not make any changes to the original game folder, ensuring the integrity of the game files is maintained.
 - Applies toning to entered RGB values, making the recoloring appear more realistic and aesthetically pleasing.
 - No manual transfers of SFX-related files or folders are required.
@@ -47,6 +48,7 @@
 - The before and after colors of the SFX are available in the `sfx_palettes`, which is reset at the beginning of each session.
 - To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files` folder.
 - To update the tool, simply replace the existing tool folder with the new version.
+- Processes may take some time to complete.
 
 ## Hints
 - Group similar SFX files together for bulk modifications and restart the tool for the recoloring session of each group.
@@ -60,6 +62,7 @@
 4. Integrate the alpha (opacity) value into the recoloring procedure.
 5. Switch f-strings used for handling path operations to the `os` module.
 6. Link the window that opens after recoloring to a checkbox.
+7. Explore more viable toning approaches.
 
 ## Contributing
 Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
