@@ -1,7 +1,7 @@
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
 <p align="center">
-  <img src="https://github.com/tfb-sv/ER-SFXRecolorTool/blob/main/builder/recolor_icon.png?raw=true" />
+  <img src="https://github.com/tfb-sv/ER-SFXRecolorTool/blob/main/builders/recolor_icon.png?raw=true" />
 </p>
 
 # Elden Ring SFX Recolor Tool
@@ -61,7 +61,6 @@
 3. Remove the need to restart the tool for changes in the `recolor_mission.json` to take effect.
 4. Integrate the alpha (opacity) value into the recoloring procedure.
 5. Switch f-strings used for handling path operations to the `os` module.
-6. Link the window that opens after recoloring to a checkbox.
 7. Explore more viable toning approaches.
 
 ## Contributing
