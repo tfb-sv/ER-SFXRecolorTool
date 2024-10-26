@@ -49,7 +49,7 @@
 - The before and after colors of the SFX are available in the `sfx_palettes`, which is reset at the beginning of each session.
 - To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files`.
 - To update the tool, replace the existing tool folder with the new version.
-- Processes may take some time to complete, especially when compressing DCXs.
+- Processes may take some time to complete, especially while compressing DCXs.
 
 ## Hints
 - Group similar SFX files together for bulk modifications and restart the tool for the recoloring session of each group.
