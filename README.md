@@ -63,7 +63,7 @@
 5. Switch f-strings used for handling path operations to the `os` module.
 7. Explore more reliable toning approaches.
 8. Apply the quick compress option for the DCX compression process.
-9. Include a button to open the program folder.
+9. Include a button to open the tool folder.
 
 ## Contributing
 Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
