@@ -6,7 +6,7 @@
 
 # Elden Ring SFX Recolor Tool
 
-**ER-SFXRecolorTool** is a modding tool for Elden Ring that automates and simplifies the SFX (FXR) recoloring procedure, particularly the cumbersome task of finding and adjusting RGBA values within the XML files. The tool is built upon some patterns I identified for RGBA values within the XML files.
+**ER-SFXRecolorTool** is a modding tool for Elden Ring that automates and simplifies the SFX (FXR) recoloring procedure, particularly the cumbersome task of finding and adjusting RGBA values in XML files. The tool is built upon specific patterns I identified within these values.
 
 - [NexusMods Page](https://www.nexusmods.com/eldenring/mods/6795)
 
