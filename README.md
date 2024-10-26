@@ -24,7 +24,8 @@
 
 ## Installation
 1. Download the latest release of this tool.
-2. Place the downloaded folder in a directory, such as the `Users`, where file read/write permissions are unrestricted.
+2. Extract the tool folder from the downloaded file.
+3. Place the extracted tool folder in a directory, such as the `Users`, where file read/write permissions are unrestricted.
 
 ## Configuration
 - Modify the `paths_config.json` to reflect your system paths.
