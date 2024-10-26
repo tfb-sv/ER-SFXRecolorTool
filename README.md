@@ -32,16 +32,16 @@
 - Enter the SFX (FXR) IDs you want to modify into the `recolor_mission.json`.
 
 ## Usage
-0. Ensure that the steps outlined in the **Configuration** section are completed.
-1. Run `ER-SFXRecolorTool.exe`.
-2. Ensure **INSPECTION** mode is selected.
-3. Click the **INSPECT** button.
-4. After inspection, the tool automatically switches from **INSPECTION** to **RECOLORING** mode.
-5. Review the color palettes displayed, and decide which colors to change.
-6. Enter new RGB values for the colors you want to change into the tool's interface.
-7. Click the **RECOLOR** button.
-8. Launch the game using **ModEngine2** after the recoloring session is complete, no further action is needed.
-9. (Optional) Fine-tune entered RGB values as needed. You may repeat the recoloring session in **RECOLORING** mode and check the effects in-game after each adjustment until the results meet your expectations.
+1. Ensure that the steps outlined in the **Configuration** section are completed.
+2. Run `ER-SFXRecolorTool.exe`.
+3. Ensure **INSPECTION** mode is selected.
+4. Click the **INSPECT** button.
+5. After inspection, the tool automatically switches from **INSPECTION** to **RECOLORING** mode.
+6. Review the color palettes displayed, and decide which colors to change.
+7. Enter new RGB values for the colors you want to change into the tool's interface.
+8. Click the **RECOLOR** button.
+9. Launch the game using **ModEngine2** after the recoloring session is complete, no further action is needed.
+10. (Optional) Fine-tune entered RGB values as needed. You may repeat the recoloring session in **RECOLORING** mode and check the effects in-game after each adjustment until the results meet your expectations.
 
 ## Additional Information
 - Logs are stored with a datetime tag in the `logs` folder for each recoloring session.
