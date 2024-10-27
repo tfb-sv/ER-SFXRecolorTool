@@ -16,6 +16,7 @@
 - Download [WitchyBND](https://github.com/ividyon/WitchyBND.git) to your computer.
 
 ## Notes
+- Currently supports only the `effects` and does not cover other folders, such as the `tex` and the `model`. 
 - Specifically designed to operate on the **Windows** platform.
 - Does not make any changes to the original game folder, ensuring the integrity of the game files is maintained.
 - Applies toning to entered RGB values, making the recoloring appear more realistic and aesthetically pleasing.
@@ -44,7 +45,7 @@
 10. (Optional) Fine-tune entered RGB values as needed. You may repeat the recoloring session in **RECOLORING** mode and check the effects in-game after each adjustment until the results meet your expectations.
 
 ## Additional Information
-- Logs are stored with a datetime tag in the `logs` folder for each recoloring session.
+- Logs are stored with a datetime tag in the `logs` for each recoloring session.
 - Changes are saved in the `recolor_mission.json`, which automatically loads when the tool starts.
 - The before and after colors of the SFX are available in the `sfx_palettes`, which is reset at the beginning of each session.
 - To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files`.
@@ -62,9 +63,10 @@
 3. Remove the need to restart the tool for changes in the `recolor_mission.json` to take effect.
 4. Integrate the alpha (opacity) value into the recoloring procedure.
 5. Switch f-strings used for handling path operations to the `os` module.
-7. Explore more reliable toning approaches.
-8. Apply the quick compress option for the DCX compression processes.
-9. Include a button to open the tool folder.
+6. Explore more reliable toning approaches.
+7. Apply the quick compress option for the DCX compression processes.
+8. Include a button to open the tool folder.
+9. Add support for other folders, such as the `tex` and the `model`.
 
 ## Contributing
 Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
