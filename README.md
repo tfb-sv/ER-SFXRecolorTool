@@ -11,9 +11,8 @@
 - [NexusMods Page](https://www.nexusmods.com/eldenring/mods/6795)
 
 ## Prerequisites
-- Ensure all game files are uncompressed using [UXM Selective Unpacker](https://github.com/Nordgaren/UXM-Selective-Unpack.git).
-- Be familiar with and ready to use [ModEngine2](https://github.com/soulsmods/ModEngine2.git).
-- Be familiar with and ready to use [WitchyBND](https://github.com/ividyon/WitchyBND.git).
+- Ensure all game files are unpacked using [UXM Selective Unpacker](https://github.com/Nordgaren/UXM-Selective-Unpack.git).
+- Be familiar with and ready to use [ModEngine2](https://github.com/soulsmods/ModEngine2.git) and [WitchyBND](https://github.com/ividyon/WitchyBND.git).
 
 ## Notes 
 - Covers SFX files of DLC as well as those from the base game.
