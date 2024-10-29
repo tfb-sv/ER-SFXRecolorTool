@@ -80,6 +80,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 ER-SFXRecolorTool uses the following licensed work(s):
 - [WitchyBND](https://github.com/ividyon/WitchyBND.git) by [ividyon](https://github.com/ividyon) (see [License](https://github.com/ividyon/WitchyBND/blob/main/LICENSE))
+- [ModEngine2](https://github.com/soulsmods/ModEngine2.git) by [soulsmods](https://github.com/soulsmods) (see [License](https://github.com/soulsmods/ModEngine2/blob/main/LICENSE-MIT))
 
 [cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
