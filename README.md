@@ -13,7 +13,7 @@
 ## Prerequisites
 - Ensure all game files are uncompressed using [UXM Selective Unpacker](https://github.com/Nordgaren/UXM-Selective-Unpack.git).
 - Be familiar with and ready to use [ModEngine2](https://github.com/soulsmods/ModEngine2.git).
-- Download the latest release of [WitchyBND](https://github.com/ividyon/WitchyBND.git) to your computer.
+- Be familiar with and ready to use [WitchyBND](https://github.com/ividyon/WitchyBND.git).
 
 ## Notes 
 - Covers SFX files of DLC as well as those from the base game.
@@ -27,7 +27,7 @@
 ## Installation
 1. Download the latest release of this tool.
 2. Extract the tool folder from the downloaded file.
-3. Place the extracted tool folder in a directory, such as the `Users`, where file read/write permissions are unrestricted.
+3. Place the extracted tool folder in a directory, such as the `Users\<your-windows-username>`, where file read/write permissions are unrestricted.
 
 ## Configuration
 - Modify the `paths_config.json` to reflect your system paths.
@@ -52,7 +52,7 @@
 - The before and after colors of the SFX are available in the `sfx_palettes` folder, which is reset at the beginning of each session.
 - To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files` folder.
 - To update the tool, replace the existing tool folder with the new version.
-- Processes may take some time to complete, especially while compressing DCXs.
+- Processes may take some time to complete, especially when compressing DCXs.
 
 ## Hints
 - Group similar SFX files together for bulk modifications and restart the tool for the recoloring session of each group.
