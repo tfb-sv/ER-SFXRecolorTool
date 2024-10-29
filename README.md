@@ -69,7 +69,7 @@
 8. Include a button to open the tool folder.
 
 ## Contributing
-Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
+Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the **GitHub** repository or posting a bug on **NexusMods**. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
 
 ## License
 © 2024 [ineedthetail](https://github.com/tfb-sv).
@@ -78,7 +78,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
 
-ER-SFXRecolorTool uses the following licensed work(s):
+**ER-SFXRecolorTool** uses the following licensed works:
 - [WitchyBND](https://github.com/ividyon/WitchyBND.git) by [ividyon](https://github.com/ividyon) (see [License](https://github.com/ividyon/WitchyBND/blob/main/LICENSE))
 - [ModEngine2](https://github.com/soulsmods/ModEngine2.git) by [SoulsMods](https://github.com/soulsmods) (see [License](https://github.com/soulsmods/ModEngine2/blob/main/LICENSE-MIT))
 
