@@ -166,4 +166,6 @@ errors
 logs
 sfx
 sfx_palettes
+prev_missions
 *.zip
+*.txt

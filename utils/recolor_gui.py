@@ -280,7 +280,7 @@ def start_recoloring_procedure(sep_width=100):
     else:
         toggle_var.set(1)
         toggle_update()
-    print(f'{"=" * sep_width}')    
+    log.info(f'{"=" * sep_width}')    
 
 def setup_ui():
     global root, toggle_var, checkbox_var, progress_bar

@@ -13,10 +13,11 @@
 ## Prerequisites
 - Ensure all game files are uncompressed using [UXM Selective Unpacker](https://github.com/Nordgaren/UXM-Selective-Unpack.git).
 - Be familiar with and ready to use [ModEngine2](https://github.com/soulsmods/ModEngine2.git).
-- Download [WitchyBND](https://github.com/ividyon/WitchyBND.git) to your computer.
+- Download the latest release of [WitchyBND](https://github.com/ividyon/WitchyBND.git) to your computer.
 
-## Notes
-- Currently supports only the `effects` and does not cover other folders, such as the `tex` and the `model`. 
+## Notes 
+- Covers SFX files of DLC as well as those from the base game.
+- Examples can be found in the `examples` folder.
 - Specifically designed to operate on the **Windows** platform.
 - Does not make any changes to the original game folder, ensuring the integrity of the game files is maintained.
 - Applies toning to entered RGB values, making the recoloring appear more realistic and aesthetically pleasing.
@@ -34,7 +35,7 @@
 
 ## Usage
 1. Ensure that the steps outlined in the **Configuration** section are completed.
-2. Run `ER-SFXRecolorTool.exe`.
+2. Launch the `ER-SFXRecolorTool.exe`.
 3. Ensure **INSPECTION** mode is selected.
 4. Click the **INSPECT** button.
 5. After inspection, the tool automatically switches from **INSPECTION** to **RECOLORING** mode.
@@ -45,10 +46,11 @@
 10. (Optional) Fine-tune entered RGB values as needed. You may repeat the recoloring session in **RECOLORING** mode and check the effects in-game after each adjustment until the results meet your expectations.
 
 ## Additional Information
-- Logs are stored with a datetime tag in the `logs` for each recoloring session.
+- The log file, `log.txt`, is reset and saved for each session. Any errors are recorded in this log file.
+- `recolor_mission.json` files are stored with a datetime tag in the `prev_missions` folder for each recoloring session.
 - Changes are saved in the `recolor_mission.json`, which automatically loads when the tool starts.
-- The before and after colors of the SFX are available in the `sfx_palettes`, which is reset at the beginning of each session.
-- To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files`.
+- The before and after colors of the SFX are available in the `sfx_palettes` folder, which is reset at the beginning of each session.
+- To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files` folder.
 - To update the tool, replace the existing tool folder with the new version.
 - Processes may take some time to complete, especially while compressing DCXs.
 
@@ -66,7 +68,6 @@
 6. Explore more reliable toning approaches.
 7. Apply the quick compress option for the DCX compression processes.
 8. Include a button to open the tool folder.
-9. Add support for other folders, such as the `tex` and the `model`.
 
 ## Contributing
 Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the GitHub repository or posting a bug on NexusMods. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.

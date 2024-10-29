@@ -52,7 +52,7 @@ def main(args):
 
     dist_folder = f"dist"
     zip_fp = f"{app_proj_name}-v{version_str}"
-    if not is_debug: shutil.make_archive(zip_fp, 'zip', dist_folder)
+    shutil.make_archive(zip_fp, 'zip', dist_folder)   # if not is_debug: 
 
 if __name__ == '__main__': 
     parser = argparse.ArgumentParser()

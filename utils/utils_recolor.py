@@ -7,11 +7,36 @@ import subprocess
 import webbrowser
 import numpy as np
 import pandas as pd
+import logging as log
 from datetime import datetime
 import matplotlib.pyplot as plt
 import seaborn as sns
 from xml.etree import ElementTree as ET
 sns.set_theme(rc={'figure.figsize':(18, 18)}, font_scale=1.8, style="white")
+
+def handle_exception(e):   # , closing_function
+    log.error(f"Error: {e}", exc_info=True)
+    # showinfo("ERROR", str(e))
+    input("Press Enter to exit..")
+    # closing_function()
+
+def setup_logger(log_fp):
+    logger = log.getLogger()
+    logger.setLevel(log.DEBUG)
+    log_format = '%(message)s'
+    # log_format = '\n%(asctime)s - %(levelname)s - %(message)s\n'
+    
+    file_handler = log.FileHandler(log_fp, mode='w')
+    file_handler.setLevel(log.DEBUG)
+    file_formatter = log.Formatter(log_format)
+    file_handler.setFormatter(file_formatter)
+    logger.addHandler(file_handler)
+
+    console_handler = log.StreamHandler()
+    console_handler.setLevel(log.INFO)
+    console_formatter = log.Formatter(log_format)
+    console_handler.setFormatter(console_formatter)
+    logger.addHandler(console_handler)
 
 def rgb_to_color_name(rgb):
     r, g, b = rgb[:3]
@@ -177,10 +202,11 @@ def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_inspection)
         else:
             if is_inspection:
                 sfx_id = int(fn[1:-4])
-                print(f"\n>> Does not match the pattern, IGNORED.\nSFX ID: {sfx_id} Length: {len(v)} Key: {key}\n")
-                if not os.path.exists("errors"): os.mkdir("errors")
+                log.warning(f"\n>> Does not match the pattern, IGNORED.\nSFX ID: {sfx_id} Length: {len(v)} Key: {key}\n")
+                ignoreds_folder_name = "errors"
+                if not os.path.exists(ignoreds_folder_name): os.mkdir(ignoreds_folder_name)
                 df = pd.DataFrame([v], columns=[f'Value{i+1}' for i in range(len(v))])
-                df.to_csv(f'errors/{sfx_id}-{key}.csv', index=False)
+                df.to_csv(f'{ignoreds_folder_name}/{sfx_id}-{key}.csv', index=False)
                 if not ignoreds[sfx_id]: ignoreds[fn] = [key]
                 else: ignoreds[sfx_id].extend(key)
             continue
@@ -251,20 +277,20 @@ def check_dcx_folder_in_path(paths, dcx_fn, dcx_folder_name):
     main_path = paths['main_path']
     save_path = paths['save_path']
     if not os.path.exists(f"{main_path}/{dcx_folder_name}"):
-        print(f'\t- Decompressing original "{dcx_folder_name}"..')
+        log.info(f'\t- Decompressing original "{dcx_folder_name}"..')
         from_fp = f"{elden_ring_abs_path}/Game/sfx/{dcx_fn}"
         to_fp = f"{main_path}/{dcx_fn}"
         command_fp = f"{main_path}/{dcx_fn}"
         shutil.copyfile(from_fp, to_fp)
         command = [witchyBND_path, command_fp]
         witchy_subprocess(command)
-    else: print(f'\t- Found original "{dcx_folder_name}".')
+    else: log.info(f'\t- Found original "{dcx_folder_name}".')
     if not os.path.exists(f"{save_path}/{dcx_folder_name}"):
-        print(f'\t- Loading modified "{dcx_folder_name}"..')
+        log.info(f'\t- Loading modified "{dcx_folder_name}"..')
         from_fp = f"{main_path}/{dcx_folder_name}"
         to_fp = f"{save_path}/{dcx_folder_name}"
         shutil.copytree(from_fp, to_fp)
-    else: print(f'\t- Found modified "{dcx_folder_name}".')
+    else: log.info(f'\t- Found modified "{dcx_folder_name}".')
         
 def check_dcx_folders_in_paths(paths, dcx2folder_dct):
     for dcx_fn, dcx_folder_name in dcx2folder_dct.items():
@@ -290,7 +316,7 @@ def process_sfx_files(sfx_ids, paths, dcx2folder_dct):
                 is_found = True
             if is_found: break
         if not is_found: 
-            print(f">> {sfx_id} NOT found in game files.")
+            log.warning(f">> {sfx_id} NOT found in game files.")
             not_exists.append(sfx_id)
             continue
         active_fp = f"{active_path}/{sfx_fn}"
@@ -310,7 +336,7 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols,
         sfx_id = int(fn[1:-8])
         xml_path = f"{active_path}/{fn}"
         with open(xml_path, "r", encoding="utf8") as f: first_2line = f.readlines()[:2]
-        print(f'\t{cnt + 1} - Processing SFX {sfx_id}..')
+        log.info(f'\t{cnt + 1} - Processing SFX {sfx_id}..')
         progress_text = f"{progress_text_main} ({cnt + 1}/{len(all_xmls)})"
         info_label.configure(text=progress_text)
         progress_number = mn + (cnt * (percentage_range / len(all_xmls)))
@@ -345,7 +371,7 @@ def move_and_compress_files(paths, sfx2dcx_dct, change_info, dcx2folder_dct):
     for cnt, (dcx_fn, is_changed) in enumerate(change_info.items()):
         if is_changed:
             dcx_folder_name = dcx2folder_dct[dcx_fn]
-            print(f'\t{cnt + 1} - Compressing "{dcx_folder_name}"..')
+            log.info(f'\t{cnt + 1} - Compressing "{dcx_folder_name}"..')
             witchy_subprocess([witchyBND_path, f"{save_path}/{dcx_folder_name}"])
 
 def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_info):
@@ -358,12 +384,13 @@ def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_i
         if is_changed: shutil.copyfile(fp, mod_fp)
     for color, rgba in recolor_mission.items():
         mission_input["target_colors"][color] = rgba 
-    if not os.path.exists("logs"): os.mkdir("logs")
+    prev_folder_name = "prev_missions"
+    if not os.path.exists(prev_folder_name): os.mkdir(prev_folder_name)
     curr_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    log_sn = f"logs/{mission_fn}_{curr_time}.json"
+    log_sn = f"{prev_folder_name}/{mission_fn}_{curr_time}.json"
     custom_json_dumper(mission_input, log_sn)
     custom_json_dumper(mission_input, mission_fn)
-    print("\n>> Recoloring was COMPLETED.\n")
+    log.info("\n>> Recoloring was COMPLETED.\n")
 
 def custom_json_dumper(data, fp, indent=4):
     with open(fp, 'w', encoding='utf8') as f:
