@@ -30,8 +30,8 @@ def main(recolor_info, progress_bar, info_label, is_run_after, suffix):
     witchy_subprocess(decompress_fxr_command)
     progress_bar.set(45 * norm_coef)
 
-    if is_inspection: stage_text4 = f"Inspecting SFX{suffix}.."
-    else: stage_text4 = f"Recoloring SFX{suffix}.."
+    if is_inspection: stage_text4 = f"Inspecting SFX.."
+    else: stage_text4 = f"Recoloring SFX.."
     info_label.configure(text=stage_text4)
     log.info(f"\n>> {stage_text4}\n")
     graph_path = paths["graph_path"]

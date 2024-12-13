@@ -85,3 +85,28 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 [cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
 [cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
+
+## Successful Attempts:
+
+- **Lightning Spear**
+  - Orange: OK
+  - Black: FAILED (it seems green, idk why)
+- **Lightning Strike** (and its sparks)
+  - Orange: OK
+- **Ancient Lightning Spear** (of Gransax)
+  - Orange: OK
+- **Moonlight Sword**
+  - Turquoise: OK
+  - Red: OK
+- **Glinstone Scrap**
+  - Turquoise: OK
+- **Founding Rain of Stars** (not complete, some SFX are missing)
+  - Orange: OK
+- **Nuke of Placidusax** (can't be sure due to too much visual effects)
+  - Orange: OK
+
+## Failed Attempts:
+
+- **Head of Frenzied Flame** (actually some of the colors seem changed, but most are the same for now, working on it)
+  - Purple: FAILED
+  - Black: FAILED

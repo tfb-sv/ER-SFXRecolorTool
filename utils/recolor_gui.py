@@ -246,13 +246,13 @@ def start_recoloring_procedure(sep_width=100):
     info_label.configure(text=final_text)
 
     if not_exists:
-        final_text += f"\nBelow {len(not_exists.keys())} SFX{suffix} NOT FOUND:\n"
+        final_text += f"\nBelow {len(not_exists.keys())} SFX NOT FOUND:\n"
         for cnt, sfx_id in enumerate(not_exists.keys()):
             final_text += f"{cnt + 1} - {sfx_id}"
     if ignoreds:
         total_ignoreds = sum(len(color_key_lst) for color_key_lst in ignoreds.values())
         was_were = "was" if suffix == "" else "were"
-        final_text += f"\n{total_ignoreds} color{suffix} within {len(ignoreds.keys())} SFX{suffix} {was_were} IGNORED."
+        final_text += f"\n{total_ignoreds} color{suffix} within {len(ignoreds.keys())} SFX {was_were} IGNORED."
     if ignoreds or not_exists: 
         tmp_suffix = "" if len(ignoreds.keys()) == 1 else "s"
         final_text += f'\nPlease report the above problem{tmp_suffix}'

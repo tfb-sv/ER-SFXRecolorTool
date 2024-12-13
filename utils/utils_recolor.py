@@ -98,9 +98,9 @@ def initialize_paths(config_fn):
     mod_abs_path = config["mod_abs_path"].replace("\\", "/")
     witchyBND_path = config["witchyBND_abs_path"].replace("\\", "/")
     witchyBND_path += "/WitchyBND.exe"
-    main_path = f"{sfx_tmp_path}/original_files"
-    save_path = f"{sfx_tmp_path}/modified_files"
-    active_path = f"{sfx_tmp_path}/active_files"
+    main_path = f"{sfx_tmp_path}/1-original_files"
+    save_path = f"{sfx_tmp_path}/3-modified_files"
+    active_path = f"{sfx_tmp_path}/2-active_files"
     if not os.path.exists(sfx_tmp_path): os.mkdir(sfx_tmp_path)
     if not os.path.exists(main_path): os.mkdir(main_path)
     if not os.path.exists(save_path): os.mkdir(save_path)
@@ -148,13 +148,7 @@ def create_toning(will_be_changed_rgbs, will_be_changed_clrs, recolor_mission):
     return will_be_changed_rgbs_new
 
 def fix_rgb_values(new_rgb):
-    fixed_rgb = []
-    for value in new_rgb:
-        fixed_value = value
-        if value < 0: fixed_value = -value   # diff = 0 - value   # 0 + (diff)
-        elif value > 1: fixed_value = 2 - value   # diff = value - 1   # 1 - (diff)
-        fixed_rgb.append(fixed_value)
-    return fixed_rgb
+    return [max(0, min(1, value)) for value in new_rgb]
 
 def find_all_groups(tree):
     root = tree.getroot()
@@ -182,7 +176,10 @@ def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_inspection)
     for key, v in all_rgb_groups.items():
         elm_v = all_elm_groups[key]
         color_type = key.split("_")[1]
-        if color_type in ["One", "Curve2"]: continue
+        if color_type in ["One", "Curve2"]: 
+            print("\n", key, color_type)
+            print(v, "\n")
+            continue   # could be related with frenzy flame and scarlet aeonia
         if len(v) in [4, 18, 23, 28, 33, 38]:
             if len(v) == 18: 
                 del v[7:9]
@@ -387,7 +384,7 @@ def finalize_process(paths, mission_input, mission_fn, recolor_mission, change_i
     prev_folder_name = "prev_missions"
     if not os.path.exists(prev_folder_name): os.mkdir(prev_folder_name)
     curr_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    log_sn = f"{prev_folder_name}/{mission_fn}_{curr_time}.json"
+    log_sn = f"{prev_folder_name}/{mission_fn[:-4]}_{curr_time}.json"
     custom_json_dumper(mission_input, log_sn)
     custom_json_dumper(mission_input, mission_fn)
     log.info("\n>> Recoloring was COMPLETED.\n")
