@@ -38,6 +38,8 @@ def setup_logger(log_fp):
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
 
+    logging.getLogger('matplotlib').setLevel(logging.WARNING)
+
 def rgb_to_color_name(rgb):
     r, g, b = rgb[:3]
     h, l, s = colorsys.rgb_to_hls(r, g, b)
