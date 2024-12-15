@@ -14,18 +14,6 @@
 - Ensure all game files are unpacked using [UXM Selective Unpacker](https://github.com/Nordgaren/UXM-Selective-Unpack.git).
 - Be familiar with and ready to use [ModEngine2](https://github.com/soulsmods/ModEngine2.git) and [WitchyBND](https://github.com/ividyon/WitchyBND.git).
 
-## Known Issues
-- The tool may sometimes get stuck in **INSPECTION** mode. As a temporary solution, instead of using **INSPECTION** mode, you can directly use **RECOLORING** mode to recolor a random color with a random RGB value. Once the process is complete, check the `sfx_palettes` folder for the color palettes and identify the colors you want to recolor. Then, recolor those specific colors with the desired RGB values.
-- Recoloring attempts to black (0, 0, 0) as the new RGB values often result in green instead of black, or it may not turn out as desired. Similar issues might occur with white and gray colors, as they have not been extensively tested.
-
-## Notes
-- Covers SFX files of DLC as well as those from the base game.
-- Examples can be found in the `examples` folder.
-- Specifically designed to operate on the **Windows** platform.
-- Does not make any changes to the original game folder, ensuring the integrity of the game files is maintained.
-- Applies toning to entered RGB values, making the recoloring appear more realistic and aesthetically pleasing.
-- No manual transfers of SFX-related files or folders are required.
-
 ## Installation
 1. Download the latest release of this tool.
 2. Extract the tool folder from the downloaded file.
@@ -46,6 +34,18 @@
 8. Click the **RECOLOR** button.
 9. Launch the game using **ModEngine2** after the recoloring session is complete, no further action is needed.
 10. (Optional) Fine-tune entered RGB values as needed. You may repeat the recoloring session in **RECOLORING** mode and check the effects in-game after each adjustment until the results meet your expectations.
+
+## Known Issues
+- The tool may sometimes get stuck in **INSPECTION** mode. As a temporary solution, instead of using **INSPECTION** mode, you can directly use **RECOLORING** mode to recolor a random color with a random RGB value. Once the process is complete, check the `sfx_palettes` folder for the color palettes and identify the colors you want to recolor. Then, recolor those specific colors with the desired RGB values.
+- Recoloring attempts to black (0, 0, 0) as the new RGB values often result in green instead of black, or it may not turn out as desired. Similar issues might occur with white and gray colors, as they have not been extensively tested.
+
+## Notes
+- Covers SFX files of DLC as well as those from the base game.
+- Examples can be found in the `examples` folder.
+- Specifically designed to operate on the **Windows** platform.
+- Does not make any changes to the original game folder, ensuring the integrity of the game files is maintained.
+- Applies toning to entered RGB values, making the recoloring appear more realistic and aesthetically pleasing.
+- No manual transfers of SFX-related files or folders are required.
 
 ## Additional Information
 - The log file, `log.txt`, is reset and saved for each session. Any errors are recorded in this log file.
