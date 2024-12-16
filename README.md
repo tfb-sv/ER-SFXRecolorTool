@@ -17,7 +17,7 @@
 ## Installation
 1. Download the latest release of this tool.
 2. Extract the tool folder from the downloaded file.
-3. Place the extracted tool folder in a directory, such as the `Users\<your-windows-username>`, where file read/write permissions are unrestricted.
+3. Place the extracted folder in a directory, such as the `Users\<your-windows-username>`, where file read/write permissions are unrestricted.
 
 ## Configuration
 - Modify the `paths_config.json` to reflect your system paths.
@@ -73,7 +73,7 @@
 - Include a button to open the tool folder.
 
 ## Contributing
-Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the **GitHub** repository or posting a bug on **NexusMods**. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
+Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the **GitHub** repository, or by creating a post or posting a bug on **NexusMods**. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
 
 ## License
 © 2024 [ineedthetail](https://github.com/tfb-sv).
@@ -90,7 +90,9 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
 [cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
 
-## Successful Attempts:
+## Recoloring Attempts
+
+### Successful Attempts:
 
 - **Lightning Spear**
   - Orange: OK
@@ -115,7 +117,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 - **Glinstone Arc**
   - Green: OK
 
-## Failed Attempts:
+### Failed Attempts:
 
 - **Head of Frenzied Flame**
   - Purple: FAILED
