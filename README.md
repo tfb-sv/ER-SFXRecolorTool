@@ -15,7 +15,7 @@
 - Be familiar with and ready to use [ModEngine2](https://github.com/soulsmods/ModEngine2.git) and [WitchyBND](https://github.com/ividyon/WitchyBND.git).
 
 ## Installation
-1. Download the latest release of this tool.
+1. Download the latest release of the tool.
 2. Extract the tool folder from the downloaded file.
 3. Place the extracted folder in a directory, such as the `Users\<your-windows-username>`, where file read/write permissions are unrestricted.
 
@@ -73,7 +73,7 @@
 - Include a button to open the tool folder.
 
 ## Contributing
-Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the **GitHub** repository, or by creating a post or posting a bug on **NexusMods**. Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
+Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the [GitHub page](https://github.com/tfb-sv/ER-SFXRecolorTool.git), or by creating a post or posting a bug on [NexusMods page](https://www.nexusmods.com/eldenring/mods/6795). Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
 
 ## License
 © 2024 [ineedthetail](https://github.com/tfb-sv).
