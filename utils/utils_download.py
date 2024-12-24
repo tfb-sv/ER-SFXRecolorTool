@@ -26,21 +26,21 @@ def download_and_unzip(url, repo):
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
         zip_ref.extractall(extract_dir)
     os.remove(zip_path)
+    return extract_dir
 
 def download_Witchy():
     owner = "ividyon"
     repo = "WitchyBND"
     version, url = get_latest_release(owner, repo)
-    download_and_unzip(url, repo)
-    return version
+    tool_fp = download_and_unzip(url, repo)
+    return tool_fp, version
 
 def download_ME2():
     owner = "soulsmods"
     repo = "ModEngine2"
     version, url = get_latest_release(owner, repo)
-    download_and_unzip(url, repo)
-    version, url = get_latest_release("soulsmods", "ModEngine2")
-    return version
+    tool_fp = download_and_unzip(url, repo)
+    return tool_fp, version
 
 def download_UXM():
     url = "https://www.nexusmods.com/eldenring/mods/1651?tab=files"

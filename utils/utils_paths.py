@@ -1,18 +1,25 @@
 import os
+import sys
 import json
 import shutil
 from pathlib import Path
 from datetime import datetime
+from tkinter import filedialog, messagebox
 
 from utils.utils_common import log, witchy_subprocess, custom_json_dumper
 from utils.utils_download import download_Witchy, download_ME2, download_UXM
+
+tool_path_add_dct = {"Elden Ring": "Game/eldenring.exe",
+                     "UXM Selective Unpacker": "Game/sfx",
+                     "WitchyBND": "launchmod_eldenring.bat",
+                     "ModEngine2": "WitchyBND.exe"}
 
 def first_controls(config_fn, mission_fn):
     # assert_config_text = f"\n>> The file {config_fn} could not be found in the tool directory. The tool is ABORTED.\n"
     assert_mission_text = f"\n>> The file {mission_fn} could not be found in the tool directory. The tool is ABORTED.\n"
     assert_length_text = f"\n>> There must be at least 1 SFX ID in the {mission_fn} file. The tool is ABORTED.\n"
     # assert os.path.exists(config_fn), assert_config_text
-    prepare_tools(config_fn)
+    check_tools_are_ready(config_fn)
     assert os.path.exists(mission_fn), assert_mission_text
     with open(mission_fn, "r", encoding="utf8") as f: mission_input = json.load(f)
     sfx_ids = mission_input["sfx_ids"]
@@ -20,24 +27,83 @@ def first_controls(config_fn, mission_fn):
     suffix = "" if len(sfx_ids) == 1 else "s"
     return mission_input, sfx_ids, suffix
 
-def prepare_tools(config_fn):
-    if not os.path.exists(config_fn): 
-        download_Witchy()
-        download_ME2()
-        download_UXM()
-    else: check_tools_are_ready(config_fn)
-        
 def check_tools_are_ready(config_fn):
-    with open(config_fn, "r", encoding="utf8") as f: config = json.load(f)
-    elden_ring_abs_path = config.get("elden_ring_abs_path", "").replace("\\", "/")
-    mod_abs_path = config.get("mod_abs_path", "").replace("\\", "/")
-    mod_engine_abs_path = str(Path(mod_abs_path).parent).replace("\\", "/")
-    witchyBND_path = config.get("witchyBND_abs_path", "").replace("\\", "/")
-    witchyBND_path += "/WitchyBND.exe"
-    if not os.path.exists(f"{elden_ring_abs_path}/Game/eldenring.exe"): pass
-    if not os.path.exists(f"{elden_ring_abs_path}/Game/sfx"): pass
-    if not os.path.exists(f"{mod_engine_abs_path}/launchmod_eldenring.bat"): pass
-    if not os.path.exists(witchyBND_path): pass
+    if not os.path.exists(config_fn): 
+        is_ER_correct = False
+        is_UXM_correct = False
+        is_Witchy_correct = False
+        is_ME2_correct = False
+        all_paths = ["", "", "", ""]
+    else: 
+        with open(config_fn, "r", encoding="utf8") as f: config = json.load(f)
+        elden_ring_abs_path = config.get("elden_ring_abs_path", "").replace("\\", "/")
+        mod_abs_path = config.get("mod_abs_path", "").replace("\\", "/")
+        mod_engine_abs_path = str(Path(mod_abs_path).parent).replace("\\", "/")
+        witchyBND_path = config.get("witchyBND_abs_path", "").replace("\\", "/")
+        if not witchyBND_path.endswith(".exe"): witchyBND_path += "/WitchyBND.exe"   # change this control later
+        is_ER_correct = check_tool_path_correct("Elden Ring", elden_ring_abs_path)
+        is_UXM_correct = check_tool_path_correct("UXM Selective Unpacker", elden_ring_abs_path)
+        is_Witchy_correct = check_tool_path_correct("WitchyBND", witchyBND_path)   # exe'siz lazim!
+        is_ME2_correct = check_tool_path_correct("ModEngine2", mod_engine_abs_path)
+        all_paths = [elden_ring_abs_path, "", witchyBND_path, mod_engine_abs_path]
+    is_correct_all_lst = [is_ER_correct, is_UXM_correct, is_Witchy_correct, is_ME2_correct]
+    if not all(is_correct_all_lst):
+        fix_tools_path_procedure(is_correct_all_lst, all_paths)
+
+def fix_tools_path_procedure(is_correct_all_lst, all_paths):
+    [is_ER_correct, is_UXM_correct, is_Witchy_correct, is_ME2_correct] = is_correct_all_lst
+    if not is_ER_correct:
+        elden_ring_abs_path = make_user_choose_tool_path("Elden Ring")
+    if not is_UXM_correct:
+        messagebox.showinfo(
+            title="UXM Selective Unpack Required",
+            message="Download UXM Selective Unpack from the page that opens and unpack the game before restarting the tool.\n\nThe tool is aborted."
+        )
+        download_UXM()
+        sys.exit(0)
+    if not is_Witchy_correct:
+        witchyBND_path = make_user_choose_tool_path("WitchyBND", download_Witchy)
+    if not is_ME2_correct:
+        mod_abs_path = make_user_choose_tool_path("ModEngine2", download_ME2)
+    # tum paths kaydet json
+
+def check_tool_path_correct(tool_name, tool_fp):
+    tool_path_add = tool_path_add_dct[tool_name]
+    tool_check_path = f"{tool_fp}/{tool_path_add}"
+    if not os.path.exists(tool_check_path): return False
+    else: return True
+
+def make_user_choose_tool_path(tool_name, download_function=None):
+    is_abort = False
+    exists = messagebox.askyesno(
+        title=f"{tool_name} Availability",
+        message=f"Does {tool_name} already exist on your computer? If yes, please select the folder of it."
+    )
+    if exists:
+        tool_fp = filedialog.askdirectory(
+            title=f"Select the {tool_name} folder",
+            initialdir="."
+        )
+        tool_fp = tool_fp.replace("\\", "/")
+        is_tool_correct = check_tool_path_correct(tool_name, tool_fp)
+        if is_tool_correct: return tool_fp
+        else: is_abort = True
+    else:
+        if download_function:
+            download = messagebox.askyesno(
+                title=f"Download {tool_name}",
+                message=f"Would you like to download {tool_name}? This process will automatically handle everything for you."
+            )
+            if download: tool_fp, version = download_function(tool_name)
+            else: is_abort = True
+        else: is_abort = True
+    if is_abort:
+        messagebox.showerror(
+        title=f"{tool_name} Required",
+        message=f"{tool_name} is required to proceed. Exiting the tool."
+        )
+        sys.exit(0)
+    return tool_fp
 
 def initialize_paths(config_fn):
     with open(config_fn, "r", encoding="utf8") as f: config = json.load(f)
