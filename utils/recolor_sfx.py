@@ -1,5 +1,8 @@
 import subprocess
-from utils.utils_recolor import *
+
+from utils.utils_common import log, witchy_subprocess
+from utils.utils_paths import initialize_paths, witchy_subprocess, move_and_compress_files, finalize_process
+from utils.utils_recolor import prepare_recolor_mission, check_dcx_folders_in_paths, process_sfx_files, process_xml_files
 
 def main(recolor_info, progress_bar, info_label, is_run_after, suffix):
     [is_inspection, recolor_mission, config_fn, mission_fn, 

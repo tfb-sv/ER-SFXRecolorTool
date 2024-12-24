@@ -1,27 +1,24 @@
 import os
 import re
 import sys
-import json
 import shutil
 import threading
+import subprocess
 from pathlib import Path
 import customtkinter as ctk
 from tkinter.messagebox import showinfo
-from utils.utils_recolor import *
+
+from utils.utils_common import log
+from utils.utils_paths import first_controls
+from utils.utils_download import open_url
+from utils.utils_recolor import get_all_colors, random_init_color
 from utils import recolor_sfx, app_proj_name, version_str
 
 config_fn = "paths_config.json"
 mission_fn = "recolor_mission.json"
-assert_config_text = f"\n>> The file {config_fn} could not be found in the program directory. The program is ABORTED.\n"
-assert_mission_text = f"\n>> The file {mission_fn} could not be found in the program directory. The program is ABORTED.\n"
-assert os.path.exists(config_fn), assert_config_text
-assert os.path.exists(mission_fn), assert_mission_text
-with open(mission_fn, "r", encoding="utf8") as f: mission_input = json.load(f)
-sfx_ids = mission_input["sfx_ids"]
-assert len(sfx_ids) > 0
-suffix = "" if len(sfx_ids) == 1 else "s"
+mission_input, sfx_ids, suffix = first_controls(config_fn, mission_fn)
 
-year_str = "2024"
+year_str = "2025"
 owner_str = "ineedthetail"
 copyright_text = f"\u00A9 {year_str} {owner_str}. Licensed under CC BY-NC-SA 4.0.\nv{version_str}"
 init_text_inspection = f"{len(sfx_ids)} SFX file{suffix} will be inspected."
@@ -194,7 +191,8 @@ def create_recolor_button(main_frame, row, column):
     global recolor_button
 
     recolor_button = ctk.CTkButton(main_frame, text="INSPECT", 
-                                   command=lambda: threading.Thread(target=start_recoloring_procedure, 
+                                   command=lambda: threading.Thread(target=start_recoloring_procedure,
+                                                                    name="Recoloring Procedure Thread",
                                                                     daemon=True).start(),
                                    fg_color=theme_color2, text_color=text_color2, 
                                    width=130, height=50, font=font_size)
