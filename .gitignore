@@ -169,3 +169,4 @@ sfx_palettes
 prev_missions
 *.zip
 *.txt
+paths_config.json

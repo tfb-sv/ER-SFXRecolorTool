@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import json
 import shutil
 import threading
 import subprocess
@@ -9,14 +10,20 @@ import customtkinter as ctk
 from tkinter.messagebox import showinfo
 
 from utils.utils_common import log
-from utils.utils_paths import first_controls
 from utils.utils_download import open_url
 from utils.utils_recolor import get_all_colors, random_init_color
-from utils import recolor_sfx, app_proj_name, version_str
+from utils import recolor_sfx, check_tools, app_proj_name, version_str
 
 config_fn = "paths_config.json"
 mission_fn = "recolor_mission.json"
-mission_input, sfx_ids, suffix = first_controls(config_fn, mission_fn)
+
+assert_mission_text = f"\n>> The file {mission_fn} could not be found in the tool directory. The tool is ABORTED.\n"
+assert_length_text = f"\n>> There must be at least 1 SFX ID in the {mission_fn} file. The tool is ABORTED.\n"
+assert os.path.exists(mission_fn), assert_mission_text
+with open(mission_fn, "r", encoding="utf8") as f: mission_input = json.load(f)
+sfx_ids = mission_input["sfx_ids"]
+assert len(sfx_ids) > 0, assert_length_text
+suffix = "" if len(sfx_ids) == 1 else "s"
 
 year_str = "2025"
 owner_str = "ineedthetail"
@@ -39,9 +46,47 @@ default_color = "transparent"
 theme_color1 = None
 text_color1 = "white"
 
+def on_opening(): check_tools_in_thread()
+
 def on_closing():
     root.destroy()
     sys.exit(0)
+
+def check_tools_in_thread():
+    threading.Thread(target=start_tool_downloader_procedure,
+                     name="Tool Downloader Thread",
+                     daemon=True).start()
+
+def start_tool_downloader_procedure():
+    disable_all_buttons()
+    check_tools.main(config_fn, info_label)
+    enable_all_buttons()
+    if toggle_var.get() == 1: info_label.configure(text=init_text_recoloring)
+    else: info_label.configure(text=init_text_inspection)
+
+def disable_all_buttons():
+    global entry_widgets, recolor_button, checkbox, toggle_inspect, toggle_recolor
+
+    is_inspection = not toggle_var.get()
+    checkbox.configure(state="disabled")
+    recolor_button.configure(state="disabled")
+    toggle_inspect.configure(state="disabled")
+    toggle_recolor.configure(state="disabled")
+    if not is_inspection:
+        for color, entry in entry_widgets.items():
+            entry.configure(state="disabled")
+
+def enable_all_buttons():
+    global entry_widgets, recolor_button, checkbox, toggle_inspect, toggle_recolor
+    
+    is_inspection = not toggle_var.get()
+    checkbox.configure(state="normal")
+    recolor_button.configure(state="normal")
+    toggle_inspect.configure(state="normal")
+    toggle_recolor.configure(state="normal")
+    if not is_inspection:
+        for color, entry in entry_widgets.items():
+            entry.configure(state="normal")
 
 def update_color_box(entry, color_box, color_box_label):
     color_value = entry.get()
@@ -222,15 +267,11 @@ def start_recoloring_procedure(sep_width=100):
     progress_bar.set(0)
     progress_bar.grid()
     info_label.configure(text=f"{mod_name.capitalize()} procedure was started..")
-    checkbox.configure(state="disabled")
-    recolor_button.configure(state="disabled")
-    toggle_inspect.configure(state="disabled")
-    toggle_recolor.configure(state="disabled")
-
+    disable_all_buttons()
+    
     recolor_mission = {}
     if not is_inspection:
         for color, entry in entry_widgets.items():
-            entry.configure(state="disabled")
             color_value = entry.get()
             is_color, _, rgba_list = convert_rgba2hex(color_value)
             if is_color: recolor_mission[color] = rgba_list 
@@ -264,13 +305,8 @@ def start_recoloring_procedure(sep_width=100):
     progress_bar.set(0)
     progress_bar.grid_remove()
     info_label.configure(text=init_text_recoloring)
-    checkbox.configure(state="normal")
-    recolor_button.configure(state="normal")
-    toggle_inspect.configure(state="normal")
-    toggle_recolor.configure(state="normal")
+    enable_all_buttons()
     if not is_inspection: 
-        for entry in entry_widgets.values():
-            entry.configure(state="normal")
         if is_run_after: 
             mod_engine_abs_path = str(Path(paths["mod_abs_path"]).parent).replace("\\", "/")
             launch_command = [f"{mod_engine_abs_path}/launchmod_eldenring.bat"]
@@ -311,6 +347,7 @@ def setup_ui():
     create_copyright_label(main_frame, 6, 0)
 
     toggle_update()
-
+    
+    root.after(100, on_opening)
     root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()

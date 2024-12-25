@@ -2,6 +2,11 @@ import threading
 import subprocess
 import logging as log
 
+tool_path_add_dct = {"Elden Ring": "Game/eldenring.exe",
+                     "UXM Selective Unpacker": "Game/sfx",
+                     "WitchyBND": "WitchyBND.exe",
+                     "ModEngine2": "launchmod_eldenring.bat"}
+
 def handle_global_thread_exception(args):
     thread_name = args.thread.name
     exc_value = args.exc_value
