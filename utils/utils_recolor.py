@@ -47,16 +47,16 @@ def prepare_recolor_mission(recolor_mission):
     return recolor_mission
 
 def core_process(core_input):
-    [tree, target_colors, fn, graph_path, cols, isPrePro, is_inspection, ignoreds] = core_input
+    [tree, target_colors, fn, graph_path, cols, isPrePro, ignoreds] = core_input
     all_rgb_groups, all_elm_groups = find_all_groups(tree)
-    chosen_rgb_groups, chosen_elm_groups, ignoreds = find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_inspection)
+    chosen_rgb_groups, chosen_elm_groups, ignoreds = find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds)
     plot_input = [chosen_rgb_groups, chosen_elm_groups, target_colors, fn, graph_path, isPrePro]
     will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs = plot_colors(plot_input, cols)
     core_output = [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, 
                    chosen_rgb_groups, chosen_elm_groups, all_rgb_groups, all_elm_groups, ignoreds]
     return core_output
 
-def create_toning(will_be_changed_rgbs, will_be_changed_clrs, recolor_mission):
+def create_toning(will_be_changed_rgbs, will_be_changed_clrs, recolor_mission):   # , toning_type
     color_groups = {color: [] for color in recolor_mission.keys()}
     for key in will_be_changed_rgbs:
         color_name = will_be_changed_clrs[key]
@@ -68,13 +68,21 @@ def create_toning(will_be_changed_rgbs, will_be_changed_clrs, recolor_mission):
         new_rgb = recolor_mission[color_name]
         avg_rgb = average_rgbs[color_name]
         diff = old_rgb - avg_rgb
-        newest_rgb = new_rgb + diff
-        fixed_newest_rgb = fix_rgb_values(newest_rgb)
+        toning_type = "no_toning"
+        if toning_type in ["standard", "soft"]:
+            newest_rgb = new_rgb + diff
+            fixed_newest_rgb = fix_rgb_values(newest_rgb, toning_type)
+        elif toning_type == "no_toning":
+            fixed_newest_rgb = new_rgb
         will_be_changed_rgbs_new[key] = fixed_newest_rgb
     return will_be_changed_rgbs_new
 
-def fix_rgb_values(new_rgb):
-    return [max(0, min(1, value)) for value in new_rgb]
+def fix_rgb_values(new_rgb, toning_type):
+    fixed_newest_rgb = [max(0, min(1, value)) for value in new_rgb]
+    if toning_type == "soft":   # normalization
+        max_value = 30 / 255
+        fixed_newest_rgb = [value * max_value for value in fixed_newest_rgb]
+    return fixed_newest_rgb
 
 def find_all_groups(tree):
     root = tree.getroot()
@@ -96,17 +104,27 @@ def find_all_groups(tree):
             cnt += 1
     return all_rgb_groups, all_elm_groups
 
-def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_inspection):
+def export_unidentified_pattern(sfx_id, v, key):
+    ignoreds_folder_name = "errors"
+    if not os.path.exists(ignoreds_folder_name): os.mkdir(ignoreds_folder_name)
+    df = pd.DataFrame([v], columns=[f'Value{i+1}' for i in range(len(v))])
+    df.to_csv(f'{ignoreds_folder_name}/{sfx_id}-{key}-{len(v)}.csv', index=False)
+
+def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds):
+    sfx_id = int(fn[1:-8])
     chosen_rgb_groups = {}
     chosen_elm_groups = {}
     for key, v in all_rgb_groups.items():
         elm_v = all_elm_groups[key]
         color_type = key.split("_")[1]
         if color_type in ["One", "Curve2"]: 
-            print("\n", key, color_type)
-            print(v, "\n")
-            continue   # could be related with frenzy flame and scarlet aeonia
-        if len(v) in [4, 18, 23, 28, 33, 38]:
+            if len(v) not in [0, 34, 47, 60]:   
+                # could be related with frenzy flame and scarlet aeonia
+                # print("\n", key, color_type)
+                # print(v, "\n")
+                export_unidentified_pattern(sfx_id, v, key)
+            continue
+        if len(v) in [4, 18, 23, 28, 33, 34, 38, 47, 60]:
             if len(v) == 18: 
                 del v[7:9]
                 del elm_v[7:9]
@@ -114,22 +132,24 @@ def find_rgb_groups(all_rgb_groups, all_elm_groups, fn, ignoreds, is_inspection)
                 del v[7:10]
                 del elm_v[7:10] 
             elif len(v) == 33: 
-                del v[9:14]
-                del elm_v[9:14]
+                del v[9:14]   # ???
+                del elm_v[9:14]   # ???
+            elif len(v) == 34:   # Curve2
+                del v[8:10]
+                del elm_v[8:10] 
             elif len(v) == 38: 
-                del v[9:15]
-                del elm_v[9:15] 
+                del v[9:15]   # ???
+                del elm_v[9:15]    # ???
+            elif len(v) == 47:   # Curve2
+                del v[8:11]
+                del elm_v[8:11] 
             assert len(v) % 4 == 0
             v = [v[i:i+4] for i in range(0, len(v), 4)]  
             elm_v = [elm_v[i:i+4] for i in range(0, len(elm_v), 4)]
         else:
-            if is_inspection:
-                sfx_id = int(fn[1:-8])
+            if len(v) != 0:
                 log.warning(f"\n>> Does not match the pattern, IGNORED.\nSFX ID: {sfx_id} Length: {len(v)} Key: {key}\n")
-                ignoreds_folder_name = "errors"
-                if not os.path.exists(ignoreds_folder_name): os.mkdir(ignoreds_folder_name)
-                df = pd.DataFrame([v], columns=[f'Value{i+1}' for i in range(len(v))])
-                df.to_csv(f'{ignoreds_folder_name}/{sfx_id}-{key}.csv', index=False)
+                export_unidentified_pattern(sfx_id, v, key)
                 if sfx_id not in ignoreds: ignoreds[sfx_id] = [key]
                 else: ignoreds[sfx_id].extend(key)
             continue
@@ -245,7 +265,7 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols,
         assert mx > progress_number
         progress_bar.set(progress_number * norm_coef)
         tree = ET.parse(xml_path)
-        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pre", is_inspection, ignoreds]
+        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pre", ignoreds]
         core_output = core_process(core_input)
         if is_inspection: continue
         [will_be_changed_rgbs, will_be_changed_elms, will_be_changed_clrs, 
@@ -257,6 +277,6 @@ def process_xml_files(recolor_mission, active_path, graph_path, cols,
                 elms[i].set('Value', str(new_rgb_values[i])) 
             tree.write(xml_path)
             replace_first_2_lines(xml_path, first_2line)
-        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pro", is_inspection, ignoreds]
+        core_input = [tree, recolor_mission.keys(), fn, graph_path, cols, "pro", ignoreds]
         _ = core_process(core_input)
     return ignoreds

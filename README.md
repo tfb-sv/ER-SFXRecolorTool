@@ -76,7 +76,7 @@
 Feedback and contributions are highly valued. Issues or suggestions for improvements can be reported by opening an issue on the [GitHub page](https://github.com/tfb-sv/ER-SFXRecolorTool.git), or by creating a post or posting a bug on [NexusMods page](https://www.nexusmods.com/eldenring/mods/6795). Please report any anomalies or `IGNORED` messages in the message boxes. If you encounter `IGNORED` messages, including the CSV files in the `errors` folder into your issue report would be greatly appreciated.
 
 ## License
-© 2024 [ineedthetail](https://github.com/tfb-sv).
+© 2025 [ineedthetail](https://github.com/tfb-sv).
 
 This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
 

@@ -15,7 +15,7 @@ def fix_tools_path_procedure(is_correct_all_lst, all_paths, config_fn, info_labe
     if not is_UXM_correct:
         messagebox.showinfo(
             title="UXM Selective Unpack Required",
-            message="Download UXM Selective Unpack from the page that opens and unpack the game before restarting the tool. Exiting the tool."
+            message="Download UXM Selective Unpack from the page that opens and UNPACK the game before restarting the tool. Exiting the tool."
         )
         download_UXM()
         sys.exit(0)
