@@ -23,7 +23,7 @@ def main(recolor_info, progress_bar, info_label, is_run_after, suffix):
     stage_text2 = f"Moving FXR{suffix}.."
     info_label.configure(text=stage_text2)
     log.info(f"\n>> {stage_text2}")
-    [decompress_fxr_command, compress_xml_command, 
+    [decompress_fxr_command, compress_xml_command,
      sfx2dcx_dct, change_info, not_exists] = process_sfx_files(sfx_ids, paths, dcx2folder_dct)
     progress_bar.set(30 * norm_coef)
 

@@ -13,7 +13,6 @@ def handle_global_thread_exception(args):
     handle_exception(exc_value, thread_name=thread_name)
 
 def handle_exception(e, thread_name):   # , closing_function
-    print(f"Error in {thread_name}:\n\n{e}\n")
     log.error(f"Error in {thread_name}:\n\n{e}\n", exc_info=True)
     # showinfo("ERROR", str(e))
     # closing_function()

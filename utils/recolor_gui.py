@@ -244,12 +244,12 @@ def create_recolor_button(main_frame, row, column):
     recolor_button.grid(row=row, column=column, padx=padx_size, pady=pady_size)
 
 def create_copyright_label(main_frame, row, column):
-    text_copyright = ctk.CTkButton(main_frame, text=copyright_text, 
+    text_copyright = ctk.CTkButton(main_frame, text=copyright_text,
                                    command=open_url,
                                    hover=False,
-                                   fg_color=default_color, text_color=text_color1, 
+                                   fg_color=default_color, text_color=text_color1,
                                    width=100, height=30, font=font_ms)
-    text_copyright.grid(row=row, column=column, padx=(padx_size + pad_l, padx_size + pad_r), 
+    text_copyright.grid(row=row, column=column, padx=(padx_size + pad_l, padx_size + pad_r),
                         pady=(pady_size + pad_top, pady_size + pad_bot))
     
 def start_recoloring_procedure(sep_width=100):  
@@ -277,7 +277,7 @@ def start_recoloring_procedure(sep_width=100):
             if is_color: recolor_mission[color] = rgba_list 
     recolor_info = [is_inspection, recolor_mission, 
                     config_fn, mission_fn, mission_input, sfx_ids]
-    paths, ignoreds, not_exists = recolor_sfx.main(recolor_info, progress_bar, info_label, 
+    paths, ignoreds, not_exists = recolor_sfx.main(recolor_info, progress_bar, info_label,
                                                    is_run_after, suffix)
     progress_bar.set(1)
     if ignoreds or not_exists: final_text += " with problems."

@@ -248,7 +248,7 @@ def process_sfx_files(sfx_ids, paths, dcx2folder_dct):
     compress_xml_command = [decompress_fxr_command[0]] + compress_xml_command
     return [decompress_fxr_command, compress_xml_command, sfx2dcx_dct, change_info, not_exists]
 
-def process_xml_files(recolor_mission, active_path, graph_path, cols, 
+def process_xml_files(recolor_mission, active_path, graph_path, cols,
                       is_inspection, info_label, progress_bar, norm_coef, mn, mx):
     progress_text_main = info_label.cget("text")
     percentage_range = mx - mn
