@@ -55,6 +55,7 @@
 - To completely reset all modifications and start from scratch, simply delete the `sfx\modified_files` folder.
 - To update the tool, replace the existing tool folder with the new version.
 - Processes may take some time to complete, especially when compressing DCXs.
+- To uninstall, simply delete the tool's folder.
 
 ## Hints
 - Group similar SFX files together for bulk modifications and restart the tool for the recoloring session of each group.
